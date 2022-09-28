@@ -1,0 +1,10 @@
+syntax = "proto3";
+package gotabit.inbox.v1beta1;
+
+option go_package = "github.com/gotabit/gotabit/x/inbox/types";
+
+message EventMsgSend {
+  string sender = 1;
+  string receiver = 2;
+  uint64 id = 3;
+}

@@ -1,0 +1,30 @@
+syntax = "proto3";
+package gotabit.inbox.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gotabit/gotabit/x/inbox/types";
+option (gogoproto.goproto_getters_all) = false;
+
+message Msg {
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_stringer) = false;
+
+  uint64 id = 1;
+
+  string sender = 2 [
+    (gogoproto.moretags) = "yaml:\"sender\""
+  ];
+
+  string to = 3 [
+    (gogoproto.moretags) = "yaml:\"to_address\""
+  ];
+
+  string topics = 4 [
+    (gogoproto.moretags) = "yaml:\"the_message_topics\""
+  ];
+
+  string message = 5 [
+    (gogoproto.moretags) = "yaml:\"message\""
+  ];
+}

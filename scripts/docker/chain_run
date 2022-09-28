@@ -1,0 +1,6 @@
+#!/bin/sh
+
+BASE_DIR=$(dirname "$0")
+
+$BASE_DIR/chain_init "$@"
+$BASE_DIR/chain_start

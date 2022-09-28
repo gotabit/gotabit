@@ -1,0 +1,36 @@
+syntax = "proto3";
+package gotabit.inbox.v1beta1;
+
+import "google/api/annotations.proto";
+import "gotabit/inbox/v1beta1/inbox.proto";
+
+option go_package = "github.com/gotabit/gotabit/x/inbox/types";
+
+// Query creates service with inbox as RPC
+service Query {
+
+  // SentMessages returns messages sent from user
+  rpc SentMessages(SentMessagesRequest) returns (SentMessagesResponse) {
+    option (google.api.http).get = "/gotabit/inbox/v1beta1/sent/{address}";
+  }
+
+  // ReceivedMessages returns messages received by user
+  rpc ReceivedMessages(ReceivedMessagesRequest) returns (ReceivedMessagesResponse) {
+    option (google.api.http).get = "/gotabit/inbox/v1beta1/received/{address}";
+  }
+}
+
+// SentMessagesRequest is request type for the Query/SentMessages RPC method
+message SentMessagesRequest { string address = 1; }
+
+// SentMessagesResponse is response type for the Query/SentMessages RPC method
+message SentMessagesResponse { repeated gotabit.inbox.v1beta1.Msg messages = 1; }
+
+// ReceivedMessagesRequest is request type for the Query/ReceivedMessages RPC method
+message ReceivedMessagesRequest {
+  string address = 1;
+  string topics = 2;
+}
+
+// ReceivedMessagesResponse is response type for the Query/ReceivedMessages RPC method
+message ReceivedMessagesResponse { repeated gotabit.inbox.v1beta1.Msg messages = 1; }

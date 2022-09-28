@@ -1,0 +1,79 @@
+name: Release static binary
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  release-static-binary:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: set tag env
+        run: |
+          VERSION=${GITHUB_REF#refs/*/}
+          [ "${{ inputs.tags }}" != "" ] && VERSION=${{ inputs.tags }}
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+  
+      - name: Make release and checksum
+        run: |
+          rm -rf build
+          echo "Release VERSION: ${{ env.VERSION }}"
+          
+          make build-linux
+          tar -czf gotabitd-${{ env.VERSION }}-linux-amd64.tar.gz build/gotabitd-linux-amd64
+          tar -czf gotabitd-${{ env.VERSION }}-linux-arm64.tar.gz build/gotabitd-linux-arm64
+          sha256sum gotabitd-${{ env.VERSION }}-linux-amd64.tar.gz > checksum.txt
+          sha256sum gotabitd-${{ env.VERSION }}-linux-arm64.tar.gz >> checksum.txt
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload amd64 release binary
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: gotabitd-${{ env.VERSION }}-linux-amd64.tar.gz
+          asset_name: gotabitd-${{ env.VERSION }}-linux-amd64.tar.gz
+          asset_content_type: application/octet-stream
+
+      - name: Upload arm64 release binary
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: gotabitd-${{ env.VERSION }}-linux-arm64.tar.gz
+          asset_name: gotabitd-${{ env.VERSION }}-linux-arm64.tar.gz
+          asset_content_type: application/octet-stream
+
+      - name: Upload release checksum
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: checksum.txt
+          asset_name: checksum.txt
+          asset_content_type: application/file
+
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v1

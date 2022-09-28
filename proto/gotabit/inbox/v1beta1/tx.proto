@@ -1,0 +1,41 @@
+syntax = "proto3";
+package gotabit.inbox;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gotabit/gotabit/x/inbox/types";
+option (gogoproto.goproto_getters_all) = false;
+
+service Msg {
+  rpc Msg(MsgSend) returns (MsgSendResponse);
+}
+
+// MsgSend defines a message for sending a message
+message MsgSend {
+  string sender = 1;
+
+  string to = 2 [
+    (gogoproto.moretags) = "yaml:\"to_address\""
+  ];
+
+  string topics = 3 [
+    (gogoproto.moretags) = "yaml:\"the_message_topics\""
+  ];
+
+  string message = 4 [
+    (gogoproto.moretags) = "yaml:\"message\""
+  ];
+}
+
+// MsgSendResponse defines the MsgSend response type
+message MsgSendResponse {
+  uint64 id = 1;
+
+  string sender = 2;
+
+  string to = 3;
+
+  string topics = 4;
+
+  string message = 5;
+}

@@ -1,0 +1,20 @@
+version: "3"
+services:
+  node:
+    build:
+      context: .
+      args:
+        - arch=${ARCH:-x86_64}
+    image: gotabitd-local
+    container_name: gotabitd-local
+    ports:
+      - 1317:1317 # rest
+      - 26656:26656 # p2p
+      - 26657:26657 # rpc
+    environment:
+      - MONIKER=node001
+      - STAKE_TOKEN=ugio
+      - FEE_TOKEN=uusd
+      - CHAIN_ID=gotabit
+      - PASSWORD=gotabitpwd
+    command: ['/opt/chain_run','gio1jmr7065yen048tdahqskjy7zz0hp6ayh825cqr']

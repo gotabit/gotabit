@@ -1,0 +1,10 @@
+#!/bin/sh
+CONFIG_DIR=${CONFIG_DIR:-$HOME/.gotabit}
+BIN="${BIN:-gotabitd} --home $CONFIG_DIR"
+TRACE=${1:-"--trace"}
+
+CMD="$BIN start --rpc.laddr tcp://0.0.0.0:26657 $TRACE"
+
+echo "Start: $CMD"
+
+`$CMD`
