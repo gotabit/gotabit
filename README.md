@@ -45,7 +45,7 @@ The GotaBit is powered by the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk)
 
 ### From Binary
 
-The easiest way to install is to download a pre-built binary. You can find the latest binaries on the [releases](https://github.com/gotabit/node/releases) page.
+The easiest way to install is to download a pre-built binary. You can find the latest binaries on the [releases](https://github.com/gotabit/gotabit/releases) page.
 
 ### From Source
 
@@ -80,10 +80,10 @@ Go v1.18+ or higher is required for The GotaBit Node.
 
 **Step 2: Get source code**
 
-Clone the source code from the [official repo](https://github.com/gotabit/node) and check out the `main` branch for the latest stable release.
+Clone the source code from the [official repo](https://github.com/gotabit/gotabit) and check out the `main` branch for the latest stable release.
 
 ```bash
-git clone https://github.com/gotabit/node
+git clone https://github.com/gotabit/gotabit
 cd node
 git checkout main
 ```
@@ -189,7 +189,7 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 <p>
 <a href="https://twitter.com/GotaBitG"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Tweet" height="30"/></a> 
   &nbsp;
- <a href="https://t.me/gotabit"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" height="30"/></a> 
+ <a href="https://t.me/GotaBitG"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" height="30"/></a> 
 </p>
 
 For updates on the GotaBit team's activities follow us on the [GotaBit Twitter](https://twitter.com/GotaBitG) account.
