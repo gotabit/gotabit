@@ -22,10 +22,14 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// EventMsgSend defines the event for MsgSend.
 type EventMsgSend struct {
-	Sender   string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
+	// msg sender address
+	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
+	// msg recipient address
 	Receiver string `protobuf:"bytes,2,opt,name=receiver,proto3" json:"receiver,omitempty"`
-	Id       uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
+	// msg id
+	Id uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (m *EventMsgSend) Reset()         { *m = EventMsgSend{} }

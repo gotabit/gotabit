@@ -66,8 +66,10 @@ func (k Keeper) GetMsgsByReceiver(ctx sdk.Context, receiver, topics string) []*t
 	msgs := []*types.Msg{}
 	var prefix []byte
 	if len(topics) == 0 {
+		// Filter by receiver only when topics is empty
 		prefix = append(types.PrefixMsgByReceiver, receiver...)
 	} else {
+		// Filter by receiver and topics
 		prefix = append(append(types.PrefixMsgByReceiverAndTopics, receiver...), topics...)
 	}
 	it := sdk.KVStorePrefixIterator(store, prefix)
@@ -88,13 +90,22 @@ func (k Keeper) GetMsgsByReceiver(ctx sdk.Context, receiver, topics string) []*t
 	return msgs
 }
 
+// SetMsg stores Msg to store
 func (k Keeper) SetMsg(ctx sdk.Context, msg *types.Msg) {
 	idBz := sdk.Uint64ToBigEndian(msg.Id)
 	bz := k.cdc.MustMarshal(msg)
 	store := ctx.KVStore(k.storeKey)
+
+	// This is for getting msgs by id
 	store.Set(append(types.PrefixMsg, idBz...), bz)
+
+	// This is for getting msgs by sender
 	store.Set(append(append(types.PrefixMsgBySender, msg.Sender...), idBz...), idBz)
+
+	// This is for getting msgs by receiver
 	store.Set(append(append(types.PrefixMsgByReceiver, msg.To...), idBz...), idBz)
+
+	// This is for getting msgs by receiver and topics
 	store.Set(append(append(append(types.PrefixMsgByReceiverAndTopics, msg.To...), msg.Topics...), idBz...), idBz)
 }
 
@@ -106,10 +117,14 @@ func (k Keeper) Send(ctx sdk.Context, mm *types.MsgSend) (id uint64, err error) 
 		return id, err
 	}
 
+	// save msg with lastMsgId + 1
+	// increase lastMsgId by 1
 	msgId := k.GetLastMsgId(ctx) + 1
 	k.SetLastMsgId(ctx, msgId)
 
 	msg.Id = msgId
+
+	// Store msg and emit event
 	k.SetMsg(ctx, msg)
 	if err := ctx.EventManager().EmitTypedEvent(&types.EventMsgSend{
 		Sender:   msg.Sender,

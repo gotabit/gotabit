@@ -3,8 +3,14 @@ package gotabit.inbox.v1beta1;
 
 option go_package = "github.com/gotabit/gotabit/x/inbox/types";
 
+// EventMsgSend defines the event for MsgSend.
 message EventMsgSend {
+  // msg sender address
   string sender = 1;
+
+  // msg recipient address
   string receiver = 2;
+
+  // msg id
   uint64 id = 3;
 }

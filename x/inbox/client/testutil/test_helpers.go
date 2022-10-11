@@ -14,7 +14,7 @@ import (
 )
 
 func SendMsg(clientCtx client.Context, sender, from, to, message string, bondDenom string) (testutil.BufferWriter, error) {
-	cmd := msgcli.GetCmdMsg()
+	cmd := msgcli.GetCmdSend()
 
 	return clitestutil.ExecTestCLICmd(clientCtx, cmd, []string{
 		from,

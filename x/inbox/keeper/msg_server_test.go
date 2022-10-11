@@ -10,7 +10,7 @@ import (
 
 func (suite *KeeperTestSuite) SendMsg(sender sdk.AccAddress, to, topics, message string) *types.MsgSendResponse {
 	msgServer := keeper.NewMsgServerImpl(&suite.app.InboxKeeper)
-	resp, err := msgServer.Msg(sdk.WrapSDKContext(suite.ctx), types.NewMsgSend(
+	resp, err := msgServer.Send(sdk.WrapSDKContext(suite.ctx), types.NewMsgSend(
 		sender.String(), to, topics, message,
 	))
 	suite.Require().NoError(err)
@@ -48,7 +48,7 @@ func (suite *KeeperTestSuite) TestMsgServerSendMsg() {
 		sender := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address().Bytes())
 
 		msgServer := keeper.NewMsgServerImpl(&suite.app.InboxKeeper)
-		resp, err := msgServer.Msg(sdk.WrapSDKContext(suite.ctx), types.NewMsgSend(
+		resp, err := msgServer.Send(sdk.WrapSDKContext(suite.ctx), types.NewMsgSend(
 			sender.String(), tc.to, tc.topics, tc.message,
 		))
 		if tc.expectPass {
@@ -61,7 +61,6 @@ func (suite *KeeperTestSuite) TestMsgServerSendMsg() {
 			lastMsgId := suite.app.InboxKeeper.GetLastMsgId(suite.ctx)
 			suite.Require().Equal(lastMsgId, tc.expectedMsgId)
 
-			// test metadataId and nftId to set correctly
 			msg, err := suite.app.InboxKeeper.GetMsgById(suite.ctx, resp.Id)
 			suite.Require().NoError(err)
 			suite.Require().Equal(msg.Id, tc.expectedMsgId)

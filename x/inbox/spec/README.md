@@ -17,19 +17,35 @@ Users can send messages and query their sent/received messages.
 
 ### Msg
 
-A `Msg` is a message object which stores `id`, `from`, `to` and `message` fields.
+A `Msg` is a message object which stores `id`, `sender`, `to`, `topics` and `message` fields.
 
 ```protobuf
+// Msg defines the inbox item - msg
 message Msg {
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_stringer) = false;
+
+  // msg id
   uint64 id = 1;
-  string from = 2 [
-    (gogoproto.moretags) = "yaml:\"from_address\""
+
+  // msg sender address
+  string sender = 2 [
+    (gogoproto.moretags) = "yaml:\"sender\""
   ];
+
+  // msg recipient address
   string to = 3 [
     (gogoproto.moretags) = "yaml:\"to_address\""
   ];
-  string message = 4 [
-    (gogoproto.moretags) = "yaml:\"msg\""
+
+  // msg topics
+  string topics = 4 [
+    (gogoproto.moretags) = "yaml:\"the_message_topics\""
+  ];
+
+  // msg message
+  string message = 5 [
+    (gogoproto.moretags) = "yaml:\"message\""
   ];
 }
 ```
@@ -37,7 +53,8 @@ message Msg {
 - Msg: `0x01 | format(id) -> Msg`
 - MsgBySender: `0x02 | format(sender) | format(id) -> Msg`
 - MsgByReceiver: `0x03 | format(receiver) | format(id) -> Msg`
-- LastMsgId `0x04 -> id`
+- MsgByReceiverAndTopics: `0x04 | format(receiver) | format(topics) | format(id) -> Msg`
+- LastMsgId `0x05 -> id`
 
 ## Messages
 
@@ -47,23 +64,43 @@ message Msg {
 At the time of message execution, it creates a new message object.
 
 ```protobuf
+// MsgSend defines a message for sending a message
 message MsgSend {
+  // msg sender address
   string sender = 1;
-  string from = 2 [
-    (gogoproto.moretags) = "yaml:\"from_address\""
-  ];
-  string to = 3 [
+
+  // msg recipient address
+  string to = 2 [
     (gogoproto.moretags) = "yaml:\"to_address\""
   ];
+
+  // msg topics
+  string topics = 3 [
+    (gogoproto.moretags) = "yaml:\"the_message_topics\""
+  ];
+
+  // msg message
   string message = 4 [
-    (gogoproto.moretags) = "yaml:\"msg\""
+    (gogoproto.moretags) = "yaml:\"message\""
   ];
 }
+
+// MsgSendResponse defines the MsgSend response type
 message MsgSendResponse {
+  // msg id
   uint64 id = 1;
-  string from = 2;
+
+  // msg sender address
+  string sender = 2;
+
+  // msg recipient address
   string to = 3;
-  string message = 4;
+
+  // msg topics
+  string topics = 4;
+
+  // msg message
+  string message = 5;
 }
 ```
 
@@ -91,7 +128,7 @@ The `inbox` module emits the following event:
 
 ### Keeper functions
 
-Epochs keeper module provides utility functions to manage epochs.
+Inbox keeper module provides utility functions to manage inbox.
 
 ```go
 // Keeper is the interface for lockup module keeper
