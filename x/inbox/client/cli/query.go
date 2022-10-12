@@ -13,11 +13,11 @@ import (
 	"github.com/gotabit/gotabit/x/inbox/types"
 )
 
-// GetQueryCmd returns the query commands for the marketplace module.
+// GetQueryCmd returns the query commands for the inbox module.
 func GetQueryCmd() *cobra.Command {
 	queryCmd := &cobra.Command{
 		Use:                types.ModuleName,
-		Short:              "Querying commands for the Msg module",
+		Short:              "Querying commands for the Inbox module",
 		DisableFlagParsing: true,
 	}
 
@@ -29,6 +29,7 @@ func GetQueryCmd() *cobra.Command {
 	return queryCmd
 }
 
+// GetCmdQuerySentMessages returns sent messsages
 func GetCmdQuerySentMessages() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:  "sent [flags]",
@@ -68,6 +69,7 @@ func GetCmdQuerySentMessages() *cobra.Command {
 	return cmd
 }
 
+// GetCmdQueryReceivedMessages returns received messsages
 func GetCmdQueryReceivedMessages() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:  "received [flags]",

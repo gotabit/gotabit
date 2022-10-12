@@ -53,24 +53,24 @@ func (sm Msg) String() string {
 
 func (sm Msg) Validate() error {
 	if len(sm.To) == 0 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing from")
+		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing 'to'")
 	}
 	if len(sm.To) > 64 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "from too long")
+		return sdkerrors.Wrapf(sdkerrors.Error{}, "'to' too long")
 	}
 
 	if len(sm.Topics) == 0 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing to")
+		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing 'topics'")
 	}
 	if len(sm.Topics) > 64 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "to too long")
+		return sdkerrors.Wrapf(sdkerrors.Error{}, "'topics' too long")
 	}
 
 	if len(sm.Message) == 0 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing message")
+		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing 'message'")
 	}
 	if len(sm.Message) > 512 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "message too long")
+		return sdkerrors.Wrapf(sdkerrors.Error{}, "'message' too long")
 	}
 
 	return nil

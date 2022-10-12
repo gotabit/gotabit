@@ -14,29 +14,30 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 )
 
-// NewTxCmd returns the transaction commands for the Msg module.
+// NewTxCmd returns the transaction commands for the Inbox module.
 func NewTxCmd() *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        types.ModuleName,
-		Short:                      "Msg transaction subcommands",
+		Short:                      "Inbox transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
 
 	txCmd.AddCommand(
-		GetCmdMsg(),
+		GetCmdSend(),
 	)
 
 	return txCmd
 }
 
-func GetCmdMsg() *cobra.Command {
+// GetCmdSend sends new message
+func GetCmdSend() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "send FROM TO MESSAGE [flags]",
-		Long: "Send message to other user",
+		Use:  "send TO TOPICS MESSAGE [flags]",
+		Long: "Send message to other user with topics",
 		Example: fmt.Sprintf(
-			`$ %s tx inbox send gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47 gio1yx06xsqreefnhwmtu8ypd6vlatwxfqs9c2h2cq "Example Message"`,
+			`$ %s tx inbox send gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47 "greeting" "Hello there!"`,
 			version.AppName,
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -49,11 +50,11 @@ func GetCmdMsg() *cobra.Command {
 				return sdkerrors.Wrapf(sdkerrors.Error{}, "invalid args length")
 			}
 
-			from := args[0]
+			to := args[0]
 			if err != nil {
 				return err
 			}
-			to := args[1]
+			topics := args[1]
 			if err != nil {
 				return err
 			}
@@ -62,7 +63,7 @@ func GetCmdMsg() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSend(clientCtx.GetFromAddress().String(), from, to, message)
+			msg := types.NewMsgSend(clientCtx.GetFromAddress().String(), to, topics, message)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

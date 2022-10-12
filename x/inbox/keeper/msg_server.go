@@ -20,7 +20,8 @@ func NewMsgServerImpl(keeper *Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-func (m msgServer) Msg(goCtx context.Context, msg *types.MsgSend) (*types.MsgSendResponse, error) {
+// Send sends a new message
+func (m msgServer) Send(goCtx context.Context, msg *types.MsgSend) (*types.MsgSendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	id, err := m.Keeper.Send(ctx, msg)

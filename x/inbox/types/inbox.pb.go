@@ -23,11 +23,17 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Msg defines the inbox item - msg
 type Msg struct {
-	Id      uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Sender  string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty" yaml:"sender"`
-	To      string `protobuf:"bytes,3,opt,name=to,proto3" json:"to,omitempty" yaml:"to_address"`
-	Topics  string `protobuf:"bytes,4,opt,name=topics,proto3" json:"topics,omitempty" yaml:"the_message_topics"`
+	// msg id
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// msg sender address
+	Sender string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty" yaml:"sender"`
+	// msg recipient address
+	To string `protobuf:"bytes,3,opt,name=to,proto3" json:"to,omitempty" yaml:"to_address"`
+	// msg topics
+	Topics string `protobuf:"bytes,4,opt,name=topics,proto3" json:"topics,omitempty" yaml:"the_message_topics"`
+	// msg message
 	Message string `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty" yaml:"message"`
 }
 
