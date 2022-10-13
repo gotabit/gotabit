@@ -4,7 +4,7 @@ The `#validators-private` channel on discord will be used for all communications
 
 **The core team will endeavour to always make sure there is 48-72 hours notice of an impending upgrade, unless there is no alternative.**
 
-Most of our validator communications is done on the [GotaBit Discord](https://discord.gg/dDgRkVwqD6). You should join, and change your server name to `nick | validator-name`, then ask a mod for permission to see the private validator channels.
+Most of our validator communications is done on the [GotaBit Discord](https://discord.gg/p3TMC5dUhP). You should join, and change your server name to `nick | validator-name`, then ask a mod for permission to see the private validator channels.
 
 ## Release versioning
 

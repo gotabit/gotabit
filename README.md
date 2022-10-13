@@ -172,7 +172,7 @@ If you're interested in running a node on the current GotaBit network, check out
 
 ## Validators
 
-If you want to participate and help secure GotaBit network, check out becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://docs.gotabit.io/). If you're running a validator node on the GotaBit network, reach out to a Janitor on the [GotaBit Discord](https://discord.gg/dDgRkVwqD6) to join the `#validators-verified` channel.
+If you want to participate and help secure GotaBit network, check out becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://docs.gotabit.io/). If you're running a validator node on the GotaBit network, reach out to a Janitor on the [GotaBit Discord](https://discord.gg/p3TMC5dUhP) to join the `#validators-verified` channel.
 
 ## Delegators
 
