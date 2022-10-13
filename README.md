@@ -84,7 +84,7 @@ Clone the source code from the [official repo](https://github.com/gotabit/gotabi
 
 ```bash
 git clone https://github.com/gotabit/gotabit
-cd node
+cd gotabit
 git checkout main
 ```
 
