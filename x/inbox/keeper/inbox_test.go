@@ -78,3 +78,50 @@ func (suite *KeeperTestSuite) TestMsgGetSet() {
 	receivedMsgs = suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, "gio1daxjpnra6jpahzjg8e6c865hmtt7469n249ln2", "topic2")
 	suite.Require().Len(receivedMsgs, 1)
 }
+
+func (suite *KeeperTestSuite) TestMsgGetAll() {
+	// get all msgs when not available
+	allMsgs := suite.app.InboxKeeper.GetAllMsgs(suite.ctx)
+	suite.Require().Len(allMsgs, 0)
+
+	// create a new msg
+	msgs := []*types.Msg{
+		{
+			Id:      1,
+			Sender:  "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47",
+			To:      "gio1pwhmp2d53crcqervmv5c6h4chdnctkvjaya9vs",
+			Topics:  "topic1",
+			Message: "message 1",
+		},
+		{
+			Id:      2,
+			Sender:  "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47",
+			To:      "gio1daxjpnra6jpahzjg8e6c865hmtt7469n249ln2",
+			Topics:  "topic2",
+			Message: "message 2",
+		},
+		{
+			Id:      3,
+			Sender:  "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47",
+			To:      "gio1daxjpnra6jpahzjg8e6c865hmtt7469n249ln2",
+			Topics:  "topic3",
+			Message: "message 3",
+		},
+	}
+
+	for _, msg := range msgs {
+		suite.app.InboxKeeper.SetMsg(suite.ctx, msg)
+	}
+
+	for _, msg := range msgs {
+		c, err := suite.app.InboxKeeper.GetMsgById(suite.ctx, msg.Id)
+		suite.Require().NoError(err)
+		suite.Require().Equal(*msg, *c)
+	}
+
+	allMsgs = suite.app.InboxKeeper.GetAllMsgs(suite.ctx)
+	suite.Require().Len(allMsgs, 3)
+	for i, msg := range msgs {
+		suite.Require().Equal(*msg, allMsgs[i])
+	}
+}
