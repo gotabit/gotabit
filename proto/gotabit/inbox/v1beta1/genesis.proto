@@ -2,9 +2,12 @@ syntax = "proto3";
 package gotabit.inbox.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "gotabit/inbox/v1beta1/inbox.proto";
 
 option go_package = "github.com/gotabit/gotabit/x/inbox/types";
 option (gogoproto.goproto_getters_all) = false;
 
 // GenesisState defines the inbox module's genesis state
-message GenesisState {}
+message GenesisState {
+    repeated Msg messages = 1 [(gogoproto.nullable) = false];
+}

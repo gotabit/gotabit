@@ -36,6 +36,22 @@ func (k Keeper) GetMsgById(ctx sdk.Context, id uint64) (*types.Msg, error) {
 	return &msg, nil
 }
 
+// GetallMsgs returns all msgs
+func (k Keeper) GetAllMsgs(ctx sdk.Context) []types.Msg {
+	store := ctx.KVStore(k.storeKey)
+
+	msgs := []types.Msg{}
+	it := sdk.KVStorePrefixIterator(store, types.PrefixMsg)
+	defer it.Close()
+
+	for ; it.Valid(); it.Next() {
+		msg := types.Msg{}
+		k.cdc.MustUnmarshal(it.Value(), &msg)
+		msgs = append(msgs, msg)
+	}
+	return msgs
+}
+
 // GetMsgsBySender returns all msgs by sender
 func (k Keeper) GetMsgsBySender(ctx sdk.Context, sender string) []*types.Msg {
 	store := ctx.KVStore(k.storeKey)
