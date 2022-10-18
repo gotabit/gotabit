@@ -216,6 +216,7 @@ func initRootCmd(
 		),
 		genutilcli.ValidateGenesisCmd(moduleBasics),
 		AddGenesisAccountCmd(defaultNodeHome),
+		AddGenesisIcaCmd(defaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		config.Cmd(),
