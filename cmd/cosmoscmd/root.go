@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
@@ -198,6 +199,11 @@ func initRootCmd(
 	buildApp AppBuilder,
 	options rootOptions,
 ) {
+	a := appCreator{
+		encodingConfig,
+		buildApp,
+	}
+
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(moduleBasics, defaultNodeHome),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, defaultNodeHome),
@@ -213,12 +219,8 @@ func initRootCmd(
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		config.Cmd(),
+		pruning.PruningCmd(a.newApp),
 	)
-
-	a := appCreator{
-		encodingConfig,
-		buildApp,
-	}
 
 	// add server commands
 	server.AddCommands(
@@ -375,6 +377,8 @@ func (a appCreator) newApp(
 		baseapp.SetSnapshotStore(snapshotStore),
 		baseapp.SetSnapshotInterval(cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval))),
 		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent))),
+		baseapp.SetIAVLCacheSize(cast.ToInt(appOpts.Get(server.FlagIAVLCacheSize))),
+		baseapp.SetIAVLDisableFastNode(cast.ToBool(appOpts.Get(server.FlagIAVLFastNode))),
 	)
 }
 
