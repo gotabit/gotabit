@@ -15,6 +15,14 @@ func DefaultGenesisState() *types.GenesisState {
 
 // InitGenesis stores the genesis state
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
+	lastMsgId := uint64(0)
+	for _, msg := range data.Messages {
+		k.SetMsg(ctx, &msg)
+		if msg.Id > lastMsgId {
+			lastMsgId = msg.Id
+		}
+	}
+	k.SetLastMsgId(ctx, lastMsgId)
 }
 
 // ExportGenesis outputs the genesis state
