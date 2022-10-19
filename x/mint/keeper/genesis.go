@@ -12,7 +12,9 @@ func (k Keeper) InitGenesis(ctx sdk.Context, data *types.GenesisState) {
 		panic("nil mint genesis state")
 	}
 
-	data.Minter.EpochProvisions = data.Params.GenesisEpochProvisions
+	if data.Minter.EpochProvisions == sdk.ZeroDec() || data.Minter.EpochProvisions.IsNil() {
+		data.Minter.EpochProvisions = data.Params.GenesisEpochProvisions
+	}
 	k.SetMinter(ctx, data.Minter)
 	k.SetParams(ctx, data.Params)
 
