@@ -7,16 +7,19 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
-	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ibcfee "github.com/cosmos/ibc-go/v4/modules/apps/29-fee"
+	ibcfeekeeper "github.com/cosmos/ibc-go/v4/modules/apps/29-fee/keeper"
+	ibcfeetypes "github.com/cosmos/ibc-go/v4/modules/apps/29-fee/types"
+	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v4/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v4/modules/core/02-client/client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -102,11 +105,11 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/prometheus/client_golang/prometheus"
 
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 
 	"github.com/gotabit/gotabit/x/epochs"
 	epochskeeper "github.com/gotabit/gotabit/x/epochs/keeper"
@@ -207,6 +210,7 @@ var (
 		slashing.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
+		ibcfee.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
@@ -229,6 +233,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		icatypes.ModuleName:    nil,
+		ibcfeetypes.ModuleName: nil,
 		wasm.ModuleName:        {authtypes.Burner},
 		epochstypes.ModuleName: nil,
 		inboxtypes.ModuleName:  nil,
@@ -281,6 +286,7 @@ type App struct {
 	UpgradeKeeper    upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	IBCFeeKeeper     ibcfeekeeper.Keeper
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
@@ -352,7 +358,7 @@ func NewGotabitApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
-		icahosttypes.StoreKey, wasm.StoreKey, epochstypes.StoreKey, inboxtypes.StoreKey,
+		icahosttypes.StoreKey, wasm.StoreKey, epochstypes.StoreKey, inboxtypes.StoreKey, ibcfeetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -429,6 +435,16 @@ func NewGotabitApp(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
 	)
 
+	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
+		appCodec, app.keys[ibcfeetypes.StoreKey],
+		app.GetSubspace(ibcfeetypes.ModuleName), // this isn't even used in the keeper but is required?
+		app.IBCKeeper.ChannelKeeper,             // may be replaced with IBC middleware
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+	)
+
 	// register the proposal types
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
@@ -443,9 +459,6 @@ func NewGotabitApp(
 		app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
 		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
 	)
-	var (
-		transferIBCModule = transfer.NewIBCModule(app.TransferKeeper)
-	)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec,
@@ -457,7 +470,6 @@ func NewGotabitApp(
 		scopedICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
-	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -520,12 +532,28 @@ func NewGotabitApp(
 	if len(enabledProposals) != 0 {
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
 	}
-	// Create static IBC router, add transfer route, then set and seal it
-	ibcRouter := ibcporttypes.NewRouter()
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
-	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.IBCKeeper.ChannelKeeper))
-	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
+
+	// Create Transfer Stack
+	var transferStack ibcporttypes.IBCModule
+	transferStack = transfer.NewIBCModule(app.TransferKeeper)
+	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
+
+	// RecvPacket, message that originates from core IBC and goes down to app, the flow is:
+	// channel.RecvPacket -> fee.OnRecvPacket -> icaHost.OnRecvPacket
+	var icaHostStack ibcporttypes.IBCModule
+	icaHostStack = icahost.NewIBCModule(app.ICAHostKeeper)
+	icaHostStack = ibcfee.NewIBCMiddleware(icaHostStack, app.IBCFeeKeeper)
+
+	// Create fee enabled wasm ibc Stack
+	var wasmStack ibcporttypes.IBCModule
+	wasmStack = wasm.NewIBCHandler(app.wasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCFeeKeeper)
+	wasmStack = ibcfee.NewIBCMiddleware(wasmStack, app.IBCFeeKeeper)
+
 	// this line is used by starport scaffolding # ibc/app/router
+	ibcRouter := ibcporttypes.NewRouter().
+		AddRoute(ibctransfertypes.ModuleName, transferStack).
+		AddRoute(wasm.ModuleName, wasmStack).
+		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	app.GovKeeper = govkeeper.NewKeeper(
@@ -565,6 +593,7 @@ func NewGotabitApp(
 		params.NewAppModule(app.ParamsKeeper),
 		transfer.NewAppModule(app.TransferKeeper),
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
+		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		epochs.NewAppModule(appCodec, *app.EpochsKeeper),
@@ -596,6 +625,7 @@ func NewGotabitApp(
 		paramstypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		epochstypes.ModuleName,
 		inboxtypes.ModuleName,
@@ -622,6 +652,7 @@ func NewGotabitApp(
 		ibctransfertypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		epochstypes.ModuleName,
 		inboxtypes.ModuleName,
@@ -653,6 +684,7 @@ func NewGotabitApp(
 		feegrant.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		epochstypes.ModuleName,
 		inboxtypes.ModuleName,
@@ -677,6 +709,7 @@ func NewGotabitApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transfer.NewAppModule(app.TransferKeeper),
+		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		epochs.NewAppModule(appCodec, *app.EpochsKeeper),
