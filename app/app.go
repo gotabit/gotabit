@@ -939,6 +939,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasm.ModuleName)
 	paramsKeeper.Subspace(epochstypes.ModuleName)
 	paramsKeeper.Subspace(inboxtypes.ModuleName)
+	paramsKeeper.Subspace(ibcfeetypes.ModuleName)
 
 	return paramsKeeper
 }
