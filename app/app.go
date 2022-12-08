@@ -438,11 +438,15 @@ func NewGotabitApp(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
 	)
 
+	ibcKeeper := ibckeeper.NewKeeper(
+		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
+	)
+
 	// IBC Fee Module keeper
 	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
 		appCodec, app.keys[ibcfeetypes.StoreKey],
 		app.GetSubspace(ibcfeetypes.ModuleName), // this isn't even used in the keeper but is required?
-		app.IBCKeeper.ChannelKeeper,             // may be replaced with IBC middleware
+		ibcKeeper.ChannelKeeper,                 // may be replaced with IBC middleware
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
