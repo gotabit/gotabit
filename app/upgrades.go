@@ -13,10 +13,11 @@ import (
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	ibcfeetypes "github.com/cosmos/ibc-go/v4/modules/apps/29-fee/types"
 
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
@@ -39,7 +40,9 @@ func (app *App) RegisterUpgradeHandlers(cfg module.Configurator) {
 			HostEnabled: true,
 			AllowMessages: []string{
 				sdk.MsgTypeURL(&banktypes.MsgSend{}),
+				sdk.MsgTypeURL(&banktypes.MsgMultiSend{}),
 				sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgUndelegate{}),
 				sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}),
 				sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
 				sdk.MsgTypeURL(&stakingtypes.MsgEditValidator{}),
@@ -48,6 +51,7 @@ func (app *App) RegisterUpgradeHandlers(cfg module.Configurator) {
 				sdk.MsgTypeURL(&distrtypes.MsgWithdrawValidatorCommission{}),
 				sdk.MsgTypeURL(&distrtypes.MsgFundCommunityPool{}),
 				sdk.MsgTypeURL(&govtypes.MsgVote{}),
+				sdk.MsgTypeURL(&govtypes.MsgVoteWeighted{}),
 				sdk.MsgTypeURL(&authz.MsgExec{}),
 				sdk.MsgTypeURL(&authz.MsgGrant{}),
 				sdk.MsgTypeURL(&authz.MsgRevoke{}),
@@ -55,6 +59,7 @@ func (app *App) RegisterUpgradeHandlers(cfg module.Configurator) {
 				// note we only support these three for now
 				sdk.MsgTypeURL(&wasmtypes.MsgStoreCode{}),
 				sdk.MsgTypeURL(&wasmtypes.MsgInstantiateContract{}),
+				sdk.MsgTypeURL(&wasmtypes.MsgInstantiateContract2{}),
 				sdk.MsgTypeURL(&wasmtypes.MsgExecuteContract{}),
 				// msg module msgs
 				sdk.MsgTypeURL(&msgtypes.MsgSend{}),
@@ -78,7 +83,7 @@ func (app *App) RegisterUpgradeHandlers(cfg module.Configurator) {
 
 	if upgradeInfo.Name == "multiverse" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := store.StoreUpgrades{
-			Added: []string{icacontrollertypes.StoreKey, icahosttypes.StoreKey},
+			Added: []string{icacontrollertypes.StoreKey, icahosttypes.StoreKey, ibcfeetypes.ModuleName},
 		}
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))

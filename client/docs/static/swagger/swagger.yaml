@@ -360,14 +360,20 @@ paths:
                     id:
                       type: string
                       format: uint64
+                      title: msg id
                     sender:
                       type: string
+                      title: msg sender address
                     to:
                       type: string
+                      title: msg recipient address
                     topics:
                       type: string
+                      title: msg topics
                     message:
                       type: string
+                      title: msg message
+                  title: Msg defines the inbox item - msg
             title: >-
               ReceivedMessagesResponse is response type for the
               Query/ReceivedMessages RPC method
@@ -422,14 +428,20 @@ paths:
                     id:
                       type: string
                       format: uint64
+                      title: msg id
                     sender:
                       type: string
+                      title: msg sender address
                     to:
                       type: string
+                      title: msg recipient address
                     topics:
                       type: string
+                      title: msg topics
                     message:
                       type: string
+                      title: msg message
+                  title: Msg defines the inbox item - msg
             title: >-
               SentMessagesResponse is response type for the Query/SentMessages
               RPC method
@@ -25901,14 +25913,20 @@ definitions:
       id:
         type: string
         format: uint64
+        title: msg id
       sender:
         type: string
+        title: msg sender address
       to:
         type: string
+        title: msg recipient address
       topics:
         type: string
+        title: msg topics
       message:
         type: string
+        title: msg message
+    title: Msg defines the inbox item - msg
   gotabit.inbox.v1beta1.ReceivedMessagesResponse:
     type: object
     properties:
@@ -25920,14 +25938,20 @@ definitions:
             id:
               type: string
               format: uint64
+              title: msg id
             sender:
               type: string
+              title: msg sender address
             to:
               type: string
+              title: msg recipient address
             topics:
               type: string
+              title: msg topics
             message:
               type: string
+              title: msg message
+          title: Msg defines the inbox item - msg
     title: >-
       ReceivedMessagesResponse is response type for the Query/ReceivedMessages
       RPC method
@@ -25942,14 +25966,20 @@ definitions:
             id:
               type: string
               format: uint64
+              title: msg id
             sender:
               type: string
+              title: msg sender address
             to:
               type: string
+              title: msg recipient address
             topics:
               type: string
+              title: msg topics
             message:
               type: string
+              title: msg message
+          title: Msg defines the inbox item - msg
     title: >-
       SentMessagesResponse is response type for the Query/SentMessages RPC
       method

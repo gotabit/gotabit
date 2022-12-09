@@ -1,4 +1,4 @@
-FROM golang:1.18.2-alpine3.15 AS go-builder
+FROM golang:1.19.3-alpine3.16 AS go-builder
 
 ENV APPNAME=gotabitd
 
@@ -23,7 +23,7 @@ RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 RUN echo "Ensuring binary is statically linked ..." \
   && (file /code/build/$APPNAME | grep "statically linked")
 
-FROM alpine:3.15.4
+FROM alpine:3.16
 
 WORKDIR /chain
 
