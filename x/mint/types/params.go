@@ -177,8 +177,8 @@ func validateReductionFactor(i interface{}) error {
 		return fmt.Errorf("reduction factor cannot be greater than 1")
 	}
 
-	if v.IsNegative() {
-		return fmt.Errorf("reduction factor cannot be negative")
+	if v.LTE(sdk.NewDec(0)) {
+		return fmt.Errorf("reduction factor must be positive: %d", v)
 	}
 
 	return nil
