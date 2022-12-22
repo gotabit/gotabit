@@ -490,7 +490,6 @@ func NewGotabitApp(
 		appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName),
 		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, app.EpochsKeeper, authtypes.FeeCollectorName,
 	)
-	app.MintKeeper.SetHooks(minttypes.MultiMintHooks{})
 
 	app.EpochsKeeper = epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
 

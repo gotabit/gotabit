@@ -173,7 +173,7 @@ func validateReductionFactor(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.GT(sdk.NewDec(1)) {
+	if v.GTE(sdk.NewDec(1)) {
 		return fmt.Errorf("reduction factor cannot be greater than 1")
 	}
 
