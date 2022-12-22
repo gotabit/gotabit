@@ -49,7 +49,7 @@ func panicCatchingEpochHook(
 	wrappedHookFn := func(ctx sdk.Context) error {
 		return hookFn(ctx, epochIdentifier, epochNumber)
 	}
-	// TODO: Thread info for which hook this is, may be dependent on larger hook system refactoring
+	// IMPROVEMENT: Thread info for which hook this is, may be dependent on larger hook system refactoring
 	err := utils.ApplyFuncIfNoError(ctx, wrappedHookFn)
 	if err != nil {
 		ctx.Logger().Error(fmt.Sprintf("error in epoch hook %v", err))
