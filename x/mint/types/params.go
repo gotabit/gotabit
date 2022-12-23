@@ -161,7 +161,7 @@ func validateReductionPeriodInEpochs(i interface{}) error {
 	}
 
 	if v <= 0 {
-		return fmt.Errorf("ReductionPeriodInEpochs must be positive: %d", v)
+		return fmt.Errorf("reduction period must be positive: %d", v)
 	}
 
 	return nil
@@ -173,7 +173,7 @@ func validateReductionFactor(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.GTE(sdk.NewDec(1)) {
+	if v.GT(sdk.NewDec(1)) {
 		return fmt.Errorf("reduction factor cannot be greater than 1")
 	}
 
