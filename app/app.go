@@ -298,7 +298,7 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
-	wasmKeeper       wasm.Keeper
+	WasmKeeper       wasm.Keeper
 	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
 	ICAHostKeeper       icahostkeeper.Keeper
@@ -514,7 +514,7 @@ func NewGotabitApp(
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate"
 	wasmOpts := GetWasmOpts(appOpts)
-	app.wasmKeeper = wasm.NewKeeper(
+	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
 		app.GetSubspace(wasm.ModuleName),
@@ -537,7 +537,7 @@ func NewGotabitApp(
 	// register wasm gov proposal types
 	enabledProposals := GetEnabledProposals()
 	if len(enabledProposals) != 0 {
-		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
+		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, enabledProposals))
 	}
 
 	// Create Transfer Stack
@@ -553,7 +553,7 @@ func NewGotabitApp(
 
 	// Create fee enabled wasm ibc Stack
 	var wasmStack ibcporttypes.IBCModule
-	wasmStack = wasm.NewIBCHandler(app.wasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCFeeKeeper)
+	wasmStack = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCFeeKeeper)
 	wasmStack = ibcfee.NewIBCMiddleware(wasmStack, app.IBCFeeKeeper)
 
 	// this line is used by starport scaffolding # ibc/app/router
@@ -602,7 +602,7 @@ func NewGotabitApp(
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
-		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		epochs.NewAppModule(appCodec, *app.EpochsKeeper),
 		inbox.NewAppModule(appCodec, app.InboxKeeper),
 	)
@@ -718,7 +718,7 @@ func NewGotabitApp(
 		transfer.NewAppModule(app.TransferKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
-		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		epochs.NewAppModule(appCodec, *app.EpochsKeeper),
 		inbox.NewAppModule(appCodec, app.InboxKeeper),
 	)
@@ -758,7 +758,7 @@ func NewGotabitApp(
 
 	if manager := app.SnapshotManager(); manager != nil {
 		err = manager.RegisterExtensions(
-			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.wasmKeeper),
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper),
 		)
 		if err != nil {
 			panic("failed to register snapshot extension: " + err.Error())
