@@ -18,6 +18,7 @@
 </div>
 
 ## Table of Contents <!-- omit in toc -->
+
 - [What is GotaBit?](#what-is-gotabit)
 - [Installation](#installation)
   - [From Binary](#from-binary)
@@ -39,7 +40,6 @@
 The network serves as a decentralized, permissionless, and censorship resistant zone for developers to efficiently and securely launch application specific smart contracts.
 
 The GotaBit is powered by the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk), [CosmWasm](https://github.com/CosmWasm/cosmwasm) and [Tendermint](https://github.com/tendermint/tendermint) BFT consensus.
-
 
 ## Installation
 
@@ -76,7 +76,6 @@ Go v1.18+ or higher is required for The GotaBit Node.
    ```sh
    go version
    ```
-
 
 **Step 2: Get source code**
 
@@ -119,7 +118,7 @@ build_deps:
 
 ### `Gotabitd`
 
-`gotabitd` is the all-in-one CLI and node daemon for interacting with the GotaBit blockchain. 
+`gotabitd` is the all-in-one CLI and node daemon for interacting with the GotaBit blockchain.
 
 To view various subcommands and their expected arguments, use the following command:
 
@@ -164,7 +163,7 @@ Flags:
 Use "gotabitd [command] --help" for more information about a command.
 ```
 
-Visit the [documentation page](https://docs.gotabit.io/how-to) for more info on usage. 
+Visit the [documentation page](https://docs.gotabit.io/how-to) for more info on usage.
 
 ## Node Operators
 
@@ -180,16 +179,19 @@ If you still want to participate on the GotaBit network, check out becoming a de
 
 ## Testnet
 
-To participate in or utilize the current GotaBit testnet, take a look at the [gotabit/testnets](https://github.com/gotabit/testnets) repository. 
+To participate in or utilize the current GotaBit testnet, take a look at the [gotabit/testnets](https://github.com/gotabit/testnets) repository.
 
 ## Talk to us
 
 We have active, helpful communities on Twitter, Discord, and Telegram.
 
 <p>
-<a href="https://twitter.com/GotaBitG"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Tweet" height="30"/></a> 
+<a href="https://twitter.com/GotaBitG"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Tweet" height="30"/></a>
   &nbsp;
- <a href="https://t.me/GotaBitG"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" height="30"/></a> 
+ <a href="https://t.me/GotaBitG"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" height="30"/></a>
+ &nbsp;
+ <a href="https://discord.gg/gotabit"><img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" height="30"/></a>
+
 </p>
 
 For updates on the GotaBit team's activities follow us on the [GotaBit Twitter](https://twitter.com/GotaBitG) account.
@@ -198,4 +200,4 @@ For updates on the GotaBit team's activities follow us on the [GotaBit Twitter](
 
 This software is licensed under the Apache 2.0 license.
 
-© 2022 GotaBit Limited
+© 2023 GotaBit Limited
