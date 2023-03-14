@@ -1,3 +1,8 @@
+[![GO](https://img.shields.io/github/go-mod/go-version/gotabit/gotabit)](https://golang.org/doc/devel/release.html)
+[![CI](https://github.com/gotabit/gotabit/workflows/reviewdog/badge.svg)](https://github.com/gotabit/gotabit/actions?query=workflow:reviewdog)
+[![CodeQL](https://github.com/gotabit/gotabit/actions/workflows/go-codeql-build.yml/badge.svg)](https://github.com/gotabit/gotabit/actions/workflows/go-codeql-build.yml)
+[![License](https://img.shields.io/github/license/gotabit/gotabit)](/LICENSE)
+
 <div align="center">
   <h1> GotaBit Chain </h1>
   <p> The full-node software implementation of the GotaBit blockchain. </p>
