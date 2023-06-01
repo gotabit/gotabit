@@ -4,13 +4,13 @@ ENV APPNAME=gotabitd
 
 # See https://github.com/CosmWasm/wasmvm/releases
 RUN ARCH=`uname -m`; echo ${ARCH}; \
-    wget https://github.com/CosmWasm/wasmvm/releases/download/v1.1.1/libwasmvm_muslc.${ARCH}.a \
-      -O /lib/libwasmvm_muslc.a; \
-    # checksums
-    wget https://github.com/CosmWasm/wasmvm/releases/download/v1.1.1/checksums.txt \
-      -O /tmp/checksums.txt; \
-    sha256sum /lib/libwasmvm_muslc.a | \
-      grep $(cat /tmp/checksums.txt | grep ${ARCH} | cut -d ' ' -f 1)
+  wget https://github.com/CosmWasm/wasmvm/releases/download/v1.2.1/libwasmvm_muslc.${ARCH}.a \
+  -O /lib/libwasmvm_muslc.a; \
+  # checksums
+  wget https://github.com/CosmWasm/wasmvm/releases/download/v1.2.1/checksums.txt \
+  -O /tmp/checksums.txt; \
+  sha256sum /lib/libwasmvm_muslc.a | \
+  grep $(cat /tmp/checksums.txt | grep ${ARCH} | cut -d ' ' -f 1)
 
 RUN apk add --no-cache ca-certificates build-base git linux-headers;
 
