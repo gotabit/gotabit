@@ -1,91 +1,85 @@
 package app
 
 import (
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/authz"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
+	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
-	// this line is used by starport scaffolding # stargate/app/moduleImport
-
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
-	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
-	ibcfeetypes "github.com/cosmos/ibc-go/v4/modules/apps/29-fee/types"
-
-	store "github.com/cosmos/cosmos-sdk/store/types"
-
-	msgtypes "github.com/gotabit/gotabit/x/inbox/types"
 )
 
-// RegisterUpgradeHandlers returns upgrade handlers
-func (app *App) RegisterUpgradeHandlers(cfg module.Configurator) {
-	// left here for hysterical raisins - we should probably remove
-	// bankBaseKeeper, _ := app.BankKeeper.(bankkeeper.BaseKeeper)
-	// app.UpgradeKeeper.SetUpgradeHandler(veritas.UpgradeName, veritas.CreateUpgradeHandler(app.mm, cfg, &app.StakingKeeper, &bankBaseKeeper))
-	app.UpgradeKeeper.SetUpgradeHandler("multiverse", func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		vm[icatypes.ModuleName] = app.mm.Modules[icatypes.ModuleName].ConsensusVersion()
+const UpgradeName = "multiverse"
 
-		// create ICS27 Controller submodule params, controller module not enabled.
-		controllerParams := icacontrollertypes.Params{}
+func (app App) RegisterUpgradeHandlers() {
+	// Set param key table for params module migration
+	for _, subspace := range app.ParamsKeeper.GetSubspaces() {
+		subspace := subspace
 
-		// create ICS27 Host submodule params
-		hostParams := icahosttypes.Params{
-			HostEnabled: true,
-			AllowMessages: []string{
-				sdk.MsgTypeURL(&banktypes.MsgSend{}),
-				sdk.MsgTypeURL(&banktypes.MsgMultiSend{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgUndelegate{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgEditValidator{}),
-				sdk.MsgTypeURL(&distrtypes.MsgWithdrawDelegatorReward{}),
-				sdk.MsgTypeURL(&distrtypes.MsgSetWithdrawAddress{}),
-				sdk.MsgTypeURL(&distrtypes.MsgWithdrawValidatorCommission{}),
-				sdk.MsgTypeURL(&distrtypes.MsgFundCommunityPool{}),
-				sdk.MsgTypeURL(&govtypes.MsgVote{}),
-				sdk.MsgTypeURL(&govtypes.MsgVoteWeighted{}),
-				sdk.MsgTypeURL(&authz.MsgExec{}),
-				sdk.MsgTypeURL(&authz.MsgGrant{}),
-				sdk.MsgTypeURL(&authz.MsgRevoke{}),
-				// wasm msgs here
-				// note we only support these three for now
-				sdk.MsgTypeURL(&wasmtypes.MsgStoreCode{}),
-				sdk.MsgTypeURL(&wasmtypes.MsgInstantiateContract{}),
-				sdk.MsgTypeURL(&wasmtypes.MsgInstantiateContract2{}),
-				sdk.MsgTypeURL(&wasmtypes.MsgExecuteContract{}),
-				// msg module msgs
-				sdk.MsgTypeURL(&msgtypes.MsgSend{}),
-			},
+		var keyTable paramstypes.KeyTable
+		switch subspace.Name() {
+		case authtypes.ModuleName:
+			keyTable = authtypes.ParamKeyTable() //nolint:staticcheck
+		case banktypes.ModuleName:
+			keyTable = banktypes.ParamKeyTable() //nolint:staticcheck
+		case stakingtypes.ModuleName:
+			keyTable = stakingtypes.ParamKeyTable() //nolint:staticcheck
+		case minttypes.ModuleName:
+			keyTable = minttypes.ParamKeyTable() //nolint:staticcheck
+		case distrtypes.ModuleName:
+			keyTable = distrtypes.ParamKeyTable() //nolint:staticcheck
+		case slashingtypes.ModuleName:
+			keyTable = slashingtypes.ParamKeyTable() //nolint:staticcheck
+		case govtypes.ModuleName:
+			keyTable = govv1.ParamKeyTable() //nolint:staticcheck
+		case crisistypes.ModuleName:
+			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck
 		}
 
-		// initialize ICS27 module
-		icamodule, correctTypecast := app.mm.Modules[icatypes.ModuleName].(ica.AppModule)
-		if !correctTypecast {
-			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
+		if !subspace.HasKeyTable() {
+			subspace.WithKeyTable(keyTable)
 		}
-		icamodule.InitModule(ctx, controllerParams, hostParams)
+	}
 
-		return app.mm.RunMigrations(ctx, cfg, vm)
-	})
+	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		UpgradeName,
+		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			// Migrate Tendermint consensus parameters from x/params module to a dedicated x/consensus module.
+			baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
+
+			// Note: this migration is optional,
+			// You can include x/gov proposal migration documented in [UPGRADING.md](https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md)
+
+			return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
+		},
+	)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
 	}
 
-	if upgradeInfo.Name == "multiverse" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := store.StoreUpgrades{
-			Added: []string{icacontrollertypes.StoreKey, icahosttypes.StoreKey, ibcfeetypes.ModuleName},
+	if upgradeInfo.Name == UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				consensustypes.ModuleName,
+				crisistypes.ModuleName,
+			},
 		}
 
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}
 }
