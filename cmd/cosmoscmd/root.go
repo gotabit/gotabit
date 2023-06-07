@@ -38,12 +38,30 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 )
 
+// AppOptionsMap is a stub implementing AppOptions which can get data from a map
+type AppOptionsMap map[string]interface{}
+
+func (m AppOptionsMap) Get(key string) interface{} {
+	v, ok := m[key]
+	if !ok {
+		return interface{}(nil)
+	}
+
+	return v
+}
+
+func NewAppOptionsWithFlagHome(homePath string) servertypes.AppOptions {
+	return AppOptionsMap{
+		flags.FlagHome: homePath,
+	}
+}
+
 // NewRootCmd creates a new root command for gotabitd. It is called once in the
 // main function.
 func NewRootCmd() *cobra.Command {
 	SetConfigs(app.AccountAddressPrefix, app.CoinType)
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
-	tempApp := app.NewApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, nil)
+	tempApp := app.NewApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, NewAppOptionsWithFlagHome("gotabit"))
 	encodingConfig := params.EncodingConfig{
 		InterfaceRegistry: tempApp.InterfaceRegistry(),
 		Codec:             tempApp.AppCodec(),
