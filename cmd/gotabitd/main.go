@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
@@ -11,7 +12,7 @@ import (
 func main() {
 	rootCmd := cosmoscmd.NewRootCmd()
 
-	if err := svrcmd.Execute(rootCmd, ".gotabit", app.DefaultNodeHome); err != nil {
+	if err := svrcmd.Execute(rootCmd, fmt.Sprint(".", app.Name), app.DefaultNodeHome); err != nil {
 		os.Exit(1)
 	}
 }

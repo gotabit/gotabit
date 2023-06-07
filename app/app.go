@@ -227,8 +227,8 @@ func init() {
 	DefaultNodeHome = filepath.Join(userHomeDir, fmt.Sprint(".", Name))
 }
 
-// NewApp returns a reference to an initialized gApp.
-func NewApp(
+// NewGotabitApp returns a reference to an initialized gApp.
+func NewGotabitApp(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,

@@ -61,7 +61,7 @@ func NewAppOptionsWithFlagHome(homePath string) servertypes.AppOptions {
 func NewRootCmd() *cobra.Command {
 	SetConfigs(app.AccountAddressPrefix, app.CoinType)
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
-	tempApp := app.NewApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, NewAppOptionsWithFlagHome("gotabit"))
+	tempApp := app.NewGotabitApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, NewAppOptionsWithFlagHome(app.Name))
 	encodingConfig := params.EncodingConfig{
 		InterfaceRegistry: tempApp.InterfaceRegistry(),
 		Codec:             tempApp.AppCodec(),
@@ -295,7 +295,7 @@ func newApp(
 
 	baseappOptions := server.DefaultBaseappOptions(appOpts)
 
-	return app.NewApp(
+	return app.NewGotabitApp(
 		logger, db, traceStore, true,
 		appOpts,
 		baseappOptions...,
@@ -332,13 +332,13 @@ func appExport(
 	appOpts = viperAppOpts
 
 	if height != -1 {
-		gApp = app.NewApp(logger, db, traceStore, false, appOpts)
+		gApp = app.NewGotabitApp(logger, db, traceStore, false, appOpts)
 
 		if err := gApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		gApp = app.NewApp(logger, db, traceStore, true, appOpts)
+		gApp = app.NewGotabitApp(logger, db, traceStore, true, appOpts)
 	}
 
 	return gApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
