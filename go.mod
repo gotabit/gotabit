@@ -161,8 +161,3 @@ require (
 	pgregory.net/rapid v0.5.5 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
-
-replace (
-	github.com/cosmos/cosmos-sdk/simapp => cosmossdk.io/simapp v0.47.2
-	github.com/cosmos/cosmos-sdk/store => cosmossdk.io/store v0.1.0-alpha
-)

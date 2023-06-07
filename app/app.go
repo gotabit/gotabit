@@ -34,7 +34,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -105,6 +104,7 @@ const (
 	AccountAddressPrefix = "gio"
 	CoinType             = 118
 	Name                 = "gotabit"
+	Version              = "v1.0.0"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -226,7 +226,7 @@ func init() {
 	DefaultNodeHome = filepath.Join(userHomeDir, "."+Name)
 }
 
-// NewApp returns a reference to an initialized SimApp.
+// NewApp returns a reference to an initialized gApp.
 func NewApp(
 	logger log.Logger,
 	db dbm.DB,
@@ -270,7 +270,7 @@ func NewApp(
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
-	bApp.SetVersion(version.Version)
+	bApp.SetVersion(Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 	bApp.SetTxEncoder(txConfig.TxEncoder())
 
@@ -605,7 +605,7 @@ func (app *App) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
-// LegacyAmino returns SimApp's amino codec.
+// LegacyAmino returns gApp's amino codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
@@ -613,7 +613,7 @@ func (app *App) LegacyAmino() *codec.LegacyAmino {
 	return app.legacyAmino
 }
 
-// AppCodec returns SimApp's app codec.
+// AppCodec returns gApp's app codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
@@ -621,12 +621,12 @@ func (app *App) AppCodec() codec.Codec {
 	return app.appCodec
 }
 
-// InterfaceRegistry returns SimApp's InterfaceRegistry
+// InterfaceRegistry returns gApp's InterfaceRegistry
 func (app *App) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
-// TxConfig returns SimApp's TxConfig
+// TxConfig returns gApp's TxConfig
 func (app *App) TxConfig() client.TxConfig {
 	return app.txConfig
 }
