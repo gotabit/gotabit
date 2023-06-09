@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	rootCmd := cosmoscmd.NewRootCmd()
+	rootCmd, _ := cosmoscmd.NewRootCmd()
 
 	if err := svrcmd.Execute(rootCmd, fmt.Sprint(".", app.Name), app.DefaultNodeHome); err != nil {
 		os.Exit(1)

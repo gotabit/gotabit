@@ -1,6 +1,7 @@
 package cosmoscmd
 
 import (
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -21,5 +22,7 @@ func SetConfigs(accountAddressPrefix string, coinType uint32) {
 	config.SetBech32PrefixForAccount(accountAddressPrefix, accountPubKeyPrefix)
 	config.SetBech32PrefixForValidator(validatorAddressPrefix, validatorPubKeyPrefix)
 	config.SetBech32PrefixForConsensusNode(consNodeAddressPrefix, consNodePubKeyPrefix)
+	config.SetAddressVerifier(wasmtypes.VerifyAddressLen())
+
 	config.Seal()
 }
