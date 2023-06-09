@@ -7,3 +7,5 @@ go.sum
 .DS_Store
 **/*/node_modules
 yarn.lock
+
+cmd/gotabitd/gotabitd
