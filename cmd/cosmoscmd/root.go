@@ -228,7 +228,7 @@ func newApp(
 		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
 	}
 
-	return app.NewWasmApp(
+	return app.NewGotabitApp(
 		logger, db, traceStore, true,
 		app.GetEnabledProposals(),
 		appOpts,
@@ -264,7 +264,7 @@ func appExport(
 	appOpts = viperAppOpts
 
 	var emptyWasmOpts []wasm.Option
-	wasmApp = app.NewWasmApp(
+	wasmApp = app.NewGotabitApp(
 		logger,
 		db,
 		traceStore,

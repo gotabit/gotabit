@@ -315,8 +315,8 @@ type App struct {
 	configurator module.Configurator
 }
 
-// NewWasmApp returns a reference to an initialized WasmApp.
-func NewWasmApp(
+// NewGotabitApp returns a reference to an initialized WasmApp.
+func NewGotabitApp(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
