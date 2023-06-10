@@ -234,7 +234,10 @@ func newApp(
 		panic(err)
 	}
 
-	baseappOptions = append(baseappOptions, baseapp.SetPruning(pruningOpts))
+	baseappOptions = append(baseappOptions,
+		baseapp.SetPruning(pruningOpts),
+		baseapp.SetIAVLCacheSize(cast.ToInt(appOpts.Get(server.FlagIAVLCacheSize))),
+		baseapp.SetIAVLDisableFastNode(cast.ToBool(appOpts.Get(server.FlagDisableIAVLFastNode))))
 
 	return app.NewGotabitApp(
 		logger, db, traceStore, true,
