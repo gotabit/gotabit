@@ -49,11 +49,11 @@ func (app App) RegisterUpgradeHandlers() {
 		case crisistypes.ModuleName:
 			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck
 		case wasmtypes.ModuleName:
-			keyTable = wasmtypes.ParamKeyTable()
+			keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
 		case inboxtypes.ModuleName:
-			keyTable = inboxtypes.ParamKeyTable()
+			keyTable = inboxtypes.ParamKeyTable() //nolint:staticcheck
 		case epochtypes.ModuleName:
-			keyTable = epochtypes.ParamKeyTable()
+			keyTable = epochtypes.ParamKeyTable() //nolint:staticcheck
 		}
 
 		if !subspace.HasKeyTable() {
