@@ -1,6 +1,10 @@
 package app
 
 import (
+	epochtypes "github.com/gotabit/gotabit/x/epochs/types"
+	inboxtypes "github.com/gotabit/gotabit/x/inbox/types"
+
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,11 +16,11 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	minttypes "github.com/gotabit/gotabit/x/mint/types"
 )
 
 const UpgradeName = "multiverse"
@@ -44,6 +48,12 @@ func (app App) RegisterUpgradeHandlers() {
 			keyTable = govv1.ParamKeyTable() //nolint:staticcheck
 		case crisistypes.ModuleName:
 			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck
+		case wasmtypes.ModuleName:
+			keyTable = wasmtypes.ParamKeyTable()
+		case inboxtypes.ModuleName:
+			keyTable = inboxtypes.ParamKeyTable()
+		case epochtypes.ModuleName:
+			keyTable = epochtypes.ParamKeyTable()
 		}
 
 		if !subspace.HasKeyTable() {
