@@ -315,7 +315,7 @@ type App struct {
 	configurator module.Configurator
 }
 
-// NewGotabitApp returns a reference to an initialized WasmApp.
+// NewGotabitApp returns a reference to an initialized gotabit application.
 func NewGotabitApp(
 	logger log.Logger,
 	db dbm.DB,
@@ -820,7 +820,6 @@ func NewGotabitApp(
 
 	// must be before Loading version
 	// requires the snapshot store to be created and registered as a BaseAppOption
-	// see cmd/wasmd/root.go: 206 - 214 approx
 	if manager := app.SnapshotManager(); manager != nil {
 		err := manager.RegisterExtensions(
 			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper),
@@ -952,12 +951,12 @@ func (app *App) AppCodec() codec.Codec {
 	return app.appCodec
 }
 
-// InterfaceRegistry returns WasmApp's InterfaceRegistry
+// InterfaceRegistry returns GotabitApp's InterfaceRegistry
 func (app *App) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
-// TxConfig returns WasmApp's TxConfig
+// TxConfig returns Gotabit's TxConfig
 func (app *App) TxConfig() client.TxConfig {
 	return app.txConfig
 }

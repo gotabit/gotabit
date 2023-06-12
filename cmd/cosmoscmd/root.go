@@ -43,7 +43,7 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
-// NewRootCmd creates a new root command for wasmd. It is called once in the
+// NewRootCmd creates a new root command for gotabitd. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
@@ -63,7 +63,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(authtypes.AccountRetriever{}).
 		WithHomeDir(app.DefaultNodeHome).
-		WithViper("") // In wasmd, we don't use any prefix for env variables.
+		WithViper("")
 
 	rootCmd := &cobra.Command{
 		Use:   version.AppName,
@@ -259,7 +259,7 @@ func appExport(
 	appOpts servertypes.AppOptions,
 	modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
-	var wasmApp *app.App
+	var gotabitApp *app.App
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
 		return servertypes.ExportedApp{}, errors.New("application home is not set")
@@ -275,7 +275,7 @@ func appExport(
 	appOpts = viperAppOpts
 
 	var emptyWasmOpts []wasm.Option
-	wasmApp = app.NewGotabitApp(
+	gotabitApp = app.NewGotabitApp(
 		logger,
 		db,
 		traceStore,
@@ -286,12 +286,12 @@ func appExport(
 	)
 
 	if height != -1 {
-		if err := wasmApp.LoadHeight(height); err != nil {
+		if err := gotabitApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	}
 
-	return wasmApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
+	return gotabitApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
