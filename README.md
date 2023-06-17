@@ -44,7 +44,7 @@
 
 The network serves as a decentralized, permissionless, and censorship resistant zone for developers to efficiently and securely launch application specific smart contracts.
 
-The GotaBit is powered by the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk), [CosmWasm](https://github.com/CosmWasm/cosmwasm) and [Tendermint](https://github.com/tendermint/tendermint) BFT consensus.
+The GotaBit is powered by the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk), [CosmWasm](https://github.com/CosmWasm/cosmwasm) and [cometbft](https://github.com/cometbft/cometbft) BFT consensus.
 
 ## Installation
 
