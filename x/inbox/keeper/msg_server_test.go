@@ -1,11 +1,10 @@
 package keeper_test
 
 import (
-	"github.com/gotabit/gotabit/x/inbox/keeper"
-	"github.com/gotabit/gotabit/x/inbox/types"
-
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/gotabit/gotabit/x/inbox/keeper"
+	"github.com/gotabit/gotabit/x/inbox/types"
 )
 
 func (suite *KeeperTestSuite) SendMsg(sender sdk.AccAddress, to, topics, message string) *types.MsgSendResponse {

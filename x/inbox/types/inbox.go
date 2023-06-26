@@ -1,10 +1,10 @@
 package types
 
 import (
+	"fmt"
+
 	"github.com/gogo/protobuf/proto"
 	"gopkg.in/yaml.v2"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
@@ -53,24 +53,24 @@ func (sm Msg) String() string {
 
 func (sm Msg) Validate() error {
 	if len(sm.To) == 0 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing 'to'")
+		return fmt.Errorf("missing 'to'")
 	}
 	if len(sm.To) > 64 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "'to' too long")
+		return fmt.Errorf("'to' too long")
 	}
 
 	if len(sm.Topics) == 0 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing 'topics'")
+		return fmt.Errorf("missing 'topics'")
 	}
 	if len(sm.Topics) > 64 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "'topics' too long")
+		return fmt.Errorf("'topics' too long")
 	}
 
 	if len(sm.Message) == 0 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "missing 'message'")
+		return fmt.Errorf("missing 'message'")
 	}
 	if len(sm.Message) > 512 {
-		return sdkerrors.Wrapf(sdkerrors.Error{}, "'message' too long")
+		return fmt.Errorf("'message' too long")
 	}
 
 	return nil

@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/gotabit/gotabit/x/mint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,7 +14,7 @@ import (
 // Keeper of the mint store.
 type Keeper struct {
 	cdc              codec.BinaryCodec
-	storeKey         sdk.StoreKey
+	storeKey         storetypes.StoreKey
 	paramSpace       paramtypes.Subspace
 	accountKeeper    types.AccountKeeper
 	bankKeeper       types.BankKeeper
@@ -25,7 +26,7 @@ type Keeper struct {
 
 // NewKeeper creates a new mint Keeper instance.
 func NewKeeper(
-	cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramtypes.Subspace,
+	cdc codec.BinaryCodec, storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	ak types.AccountKeeper, bk types.BankKeeper, dk types.DistrKeeper, epochKeeper types.EpochKeeper,
 	feeCollectorName string,
 ) Keeper {
@@ -41,7 +42,7 @@ func NewKeeper(
 
 	return Keeper{
 		cdc:              cdc,
-		storeKey:         key,
+		storeKey:         storeKey,
 		paramSpace:       paramSpace,
 		accountKeeper:    ak,
 		bankKeeper:       bk,
@@ -131,7 +132,7 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 
 // GetProportions gets the balance of the `MintedDenom` from minted coins and returns coins according to the `AllocationRatio`.
 func (k Keeper) GetProportions(ctx sdk.Context, mintedCoin sdk.Coin, ratio sdk.Dec) sdk.Coin {
-	return sdk.NewCoin(mintedCoin.Denom, mintedCoin.Amount.ToDec().Mul(ratio).TruncateInt())
+	return sdk.NewCoin(mintedCoin.Denom, sdk.NewDec(mintedCoin.Amount.Int64()).Mul(ratio).TruncateInt())
 }
 
 // DistributeMintedCoin implements distribution of minted coins from mint to external modules.
@@ -186,7 +187,7 @@ func (k Keeper) DistributeMintedCoin(ctx sdk.Context, mintedCoin sdk.Coin) error
 	}
 
 	// subtract from original provision to ensure no coins left over after the allocations
-	communityPoolCoins := sdk.NewCoins(mintedCoin).Sub(stakingIncentivesCoins).Sub(ecoFundPoolCoins).Sub(developerFundPoolCoins)
+	communityPoolCoins := sdk.NewCoins(mintedCoin).Sub(stakingIncentivesCoins...).Sub(ecoFundPoolCoins...).Sub(developerFundPoolCoins...)
 	err = k.distrKeeper.FundCommunityPool(ctx, communityPoolCoins, k.accountKeeper.GetModuleAddress(types.ModuleName))
 	if err != nil {
 		return err

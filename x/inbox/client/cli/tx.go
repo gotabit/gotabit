@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 )
 
@@ -47,7 +46,7 @@ func GetCmdSend() *cobra.Command {
 			}
 
 			if len(args) != 3 {
-				return sdkerrors.Wrapf(sdkerrors.Error{}, "invalid args length")
+				return fmt.Errorf("invalid args length")
 			}
 
 			to := args[0]
