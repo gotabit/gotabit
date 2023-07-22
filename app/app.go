@@ -419,21 +419,6 @@ func NewGotabitApp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	app.MintKeeper = mintkeeper.NewKeeper(
-		appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, app.EpochsKeeper, authtypes.FeeCollectorName,
-	)
-	app.EpochsKeeper = epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
-
-	app.EpochsKeeper.SetHooks(
-		epochstypes.NewMultiEpochHooks(
-			// insert epoch hooks receivers here
-			app.MintKeeper.Hooks(),
-		),
-	)
-
-	app.InboxKeeper = inboxkeeper.NewKeeper(appCodec, keys[inboxtypes.StoreKey])
-
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
 		keys[distrtypes.StoreKey],
@@ -595,6 +580,24 @@ func NewGotabitApp(
 		scopedICAControllerKeeper,
 		app.MsgServiceRouter(),
 	)
+
+	app.MintKeeper = mintkeeper.NewKeeper(
+		appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName),
+		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, app.EpochsKeeper, authtypes.FeeCollectorName,
+	)
+
+	app.MintKeeper.SetHooks(minttypes.MultiMintHooks{})
+
+	app.EpochsKeeper = epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
+
+	app.EpochsKeeper.SetHooks(
+		epochstypes.NewMultiEpochHooks(
+			// insert epoch hooks receivers here
+			app.MintKeeper.Hooks(),
+		),
+	)
+
+	app.InboxKeeper = inboxkeeper.NewKeeper(appCodec, keys[inboxtypes.StoreKey])
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)

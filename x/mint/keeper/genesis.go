@@ -7,7 +7,7 @@ import (
 )
 
 // InitGenesis new mint genesis.
-func (k Keeper) InitGenesis(ctx sdk.Context, data *types.GenesisState) {
+func (k Keeper) InitGenesis(ctx sdk.Context, ak types.AccountKeeper, data *types.GenesisState) {
 	if data == nil {
 		panic("nil mint genesis state")
 	}
@@ -19,7 +19,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, data *types.GenesisState) {
 	k.SetParams(ctx, data.Params)
 
 	// The call to GetModuleAccount creates a module account if it does not exist.
-	k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
+	ak.GetModuleAccount(ctx, types.ModuleName)
 
 	k.SetLastReductionEpochNum(ctx, data.ReductionStartedEpoch)
 }
