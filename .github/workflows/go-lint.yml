@@ -18,7 +18,10 @@ jobs:
         with:
           go-version: 1.19
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       - name: Run lint
         run: |
+          git checkout HEAD^
           go mod tidy
           make lint
