@@ -73,7 +73,7 @@ func (db *DB) Snapshot(height uint64, protoWriter protoio.Writer) (returnErr err
 		exporter := tree.Tree.Export()
 		for {
 			node, err := exporter.Next()
-			if err == iavl.ExportDone {
+			if err == iavl.ErrorExportDone {
 				break
 			} else if err != nil {
 				return err
@@ -124,7 +124,7 @@ func (e *Exporter) Next() (*iavl.ExportNode, error) {
 	if exportNode, ok := <-e.ch; ok {
 		return exportNode, nil
 	}
-	return nil, iavl.ExportDone
+	return nil, iavl.ErrorExportDone
 }
 
 // Close closes the exporter. It is safe to call multiple times.
