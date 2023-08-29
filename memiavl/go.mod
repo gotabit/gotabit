@@ -69,9 +69,9 @@ require (
 replace (
 	github.com/cosmos/iavl => github.com/cosmos/iavl v0.21.0-alpha.1.0.20230810150328-b35e4ff2218e
 
-	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/gogo/protobuf => github.com/cosmos/gogoproto v1.3.3-alpha.regen.1
 	// use cometbft
-	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.29
+	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.37.2
 	// https://github.com/crypto-org-chain/tm-db/tree/release/v0.6.x
 	github.com/tendermint/tm-db => github.com/cometbft/cometbft-db v0.7.0
 )

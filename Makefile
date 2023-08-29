@@ -20,7 +20,7 @@ ifeq (,$(VERSION))
 	endif
 endif
 
-TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
+TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
 
 export GO111MODULE = on
 
@@ -75,7 +75,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=$(NAME) \
 	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
-	-X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
+	-X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_VERSION)
 
 # DB backend selection
 ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))

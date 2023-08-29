@@ -8,8 +8,8 @@ import (
 
 	"cosmossdk.io/errors"
 	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
+	protoio "github.com/cosmos/gogoproto/io"
 	"github.com/cosmos/iavl"
-	protoio "github.com/gogo/protobuf/io"
 )
 
 // exportBufferSize is the number of nodes to buffer in the exporter. It improves throughput by
