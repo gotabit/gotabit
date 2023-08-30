@@ -115,6 +115,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
+	memiavlstore "github.com/crypto-org-chain/cronos/store"
 	"github.com/gotabit/gotabit/x/epochs"
 	epochskeeper "github.com/gotabit/gotabit/x/epochs/keeper"
 	epochstypes "github.com/gotabit/gotabit/x/epochs/types"
@@ -327,10 +328,13 @@ func NewGotabitApp(
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
 	encodingConfig := MakeEncodingConfig()
+	homePath := cast.ToString(appOpts.Get(flags.FlagHome))
 
 	appCodec, legacyAmino := encodingConfig.Marshaler, encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 	txConfig := encodingConfig.TxConfig
+
+	baseAppOptions = memiavlstore.SetupMemIAVL(logger, homePath, appOpts, true, baseAppOptions)
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -469,7 +473,7 @@ func NewGotabitApp(
 	for _, h := range cast.ToIntSlice(appOpts.Get(server.FlagUnsafeSkipUpgrades)) {
 		skipUpgradeHeights[int64(h)] = true
 	}
-	homePath := cast.ToString(appOpts.Get(flags.FlagHome))
+
 	// set the governance module account as the authority for conducting upgrades
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,

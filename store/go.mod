@@ -5,7 +5,7 @@ go 1.20
 require (
 	cosmossdk.io/errors v1.0.0
 	github.com/cometbft/cometbft v0.37.2
-	github.com/cometbft/cometbft-db v0.7.0
+	github.com/cometbft/cometbft-db v0.8.0
 	github.com/confio/ics23/go v0.9.0
 	github.com/cosmos/cosmos-sdk v0.47.4
 	github.com/cosmos/gogoproto v1.4.10
@@ -71,6 +71,7 @@ require (
 	github.com/klauspost/compress v1.16.3 // indirect
 	github.com/ledgerwatch/erigon-lib v0.0.0-20230210071639-db0e7ed11263 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
+	github.com/linxGnu/grocksdb v1.7.16 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
@@ -95,7 +96,6 @@ require (
 	github.com/spf13/viper v1.14.0 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
-	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
 	github.com/tidwall/gjson v1.10.2 // indirect
@@ -127,13 +127,13 @@ require (
 )
 
 replace (
+	github.com/crypto-org-chain/cronos/memiavl => ../memiavl
 
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
-	github.com/crypto-org-chain/cronos/memiavl => ../memiavl
 
 	github.com/gogo/protobuf => github.com/cosmos/gogoproto v1.3.3-alpha.regen.1
 	// use cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.37.2
 	// https://github.com/crypto-org-chain/tm-db/tree/release/v0.6.x
-	github.com/tendermint/tm-db => github.com/cometbft/cometbft-db v0.7.0
+	github.com/tendermint/tm-db => github.com/cometbft/cometbft-db v0.8.0
 )
