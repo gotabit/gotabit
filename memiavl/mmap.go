@@ -17,15 +17,15 @@ type MmapFile struct {
 
 // Open openes the file and create the mmap.
 // the mmap is created with flags: PROT_READ, MAP_SHARED, MADV_RANDOM.
-func NewMmap(path string) (*MmapFile, error) {
-	file, err := os.Open(path)
+func NewMmap(filepath string) (*MmapFile, error) {
+	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
 	}
 
 	data, handle, err := Mmap(file)
 	if err != nil {
-		_ = file.Close()
+		file.Close()
 		return nil, err
 	}
 
@@ -42,6 +42,7 @@ func (m *MmapFile) Close() error {
 	if m.handle != nil {
 		err = mmap.Munmap(m.data, m.handle)
 	}
+
 	return errors.Join(err, m.file.Close())
 }
 
@@ -52,11 +53,9 @@ func (m *MmapFile) Data() []byte {
 
 func Mmap(f *os.File) ([]byte, *[mmap.MaxMapSize]byte, error) {
 	fi, err := f.Stat()
-	if err != nil {
+	if err != nil || fi.Size() == 0 {
 		return nil, nil, err
 	}
-	if fi.Size() == 0 {
-		return nil, nil, nil
-	}
+
 	return mmap.Mmap(f, int(fi.Size()))
 }
