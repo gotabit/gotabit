@@ -182,14 +182,14 @@ require (
 )
 
 replace (
-	// Modified according to cronos repo. github.com/crypto-org-chain/cronos
-	github.com/crypto-org-chain/cronos/memiavl => ./memiavl
-
-	github.com/crypto-org-chain/cronos/store => ./store
 
 	cosmossdk.io/simapp => github.com/cosmos/cosmos-sdk/simapp v0.47.2
 
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+	// Modified according to cronos repo. github.com/crypto-org-chain/cronos
+	github.com/crypto-org-chain/cronos/memiavl => ./memiavl
+
+	github.com/crypto-org-chain/cronos/store => ./store
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// See: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

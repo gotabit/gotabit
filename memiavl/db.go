@@ -257,12 +257,10 @@ func removeTmpDirs(rootDir string) error {
 	}
 
 	for _, entry := range entries {
-		if !entry.IsDir() || !strings.HasSuffix(entry.Name(), TmpSuffix) {
-			continue
-		}
-
-		if err := os.RemoveAll(filepath.Join(rootDir, entry.Name())); err != nil {
-			return err
+		if entry.IsDir() && strings.HasSuffix(entry.Name(), TmpSuffix) {
+			if err := os.RemoveAll(filepath.Join(rootDir, entry.Name())); err != nil {
+				return err
+			}
 		}
 	}
 
