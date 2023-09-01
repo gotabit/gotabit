@@ -1,4 +1,4 @@
-FROM golang:1.19.3-alpine3.16 AS go-builder
+FROM golang:1.20-alpine AS go-builder
 
 ENV APPNAME=gotabitd
 
