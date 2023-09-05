@@ -9,12 +9,11 @@ import (
 	"path/filepath"
 
 	"cosmossdk.io/errors"
-	protoio "github.com/cosmos/gogoproto/io"
-	"github.com/cosmos/iavl"
-
 	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	protoio "github.com/cosmos/gogoproto/io"
+	"github.com/cosmos/iavl"
 )
 
 // Import restore memiavl db from state-sync snapshot stream

@@ -4,9 +4,10 @@ import (
 	"io"
 	"testing"
 
+	"github.com/cosmos/iavl"
+
 	protoio "github.com/cosmos/gogoproto/io"
 	proto "github.com/cosmos/gogoproto/proto"
-	"github.com/cosmos/iavl"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,7 +15,8 @@ func TestSnapshotEncodingRoundTrip(t *testing.T) {
 	// setup test tree
 	tree := New(0)
 	for _, changes := range ChangeSets[:len(ChangeSets)-1] {
-		_, _, err := tree.ApplyChangeSet(changes, true)
+		tree.ApplyChangeSet(changes)
+		_, _, err := tree.SaveVersion(true)
 		require.NoError(t, err)
 	}
 
@@ -41,7 +43,8 @@ func TestSnapshotEncodingRoundTrip(t *testing.T) {
 	snapshot, err = OpenSnapshot(snapshotDir)
 	require.NoError(t, err)
 	tree3 := NewFromSnapshot(snapshot, true, 0)
-	hash, v, err := tree3.ApplyChangeSet(ChangeSets[len(ChangeSets)-1], true)
+	tree3.ApplyChangeSet(ChangeSets[len(ChangeSets)-1])
+	hash, v, err := tree3.SaveVersion(true)
 	require.NoError(t, err)
 	require.Equal(t, RefHashes[len(ChangeSets)-1], hash)
 	require.Equal(t, len(ChangeSets), int(v))
@@ -62,7 +65,8 @@ func TestSnapshotExport(t *testing.T) {
 	// setup test tree
 	tree := New(0)
 	for _, changes := range ChangeSets[:3] {
-		_, _, err := tree.ApplyChangeSet(changes, true)
+		tree.ApplyChangeSet(changes)
+		_, _, err := tree.SaveVersion(true)
 		require.NoError(t, err)
 	}
 
@@ -90,7 +94,8 @@ func TestSnapshotImportExport(t *testing.T) {
 	// setup test tree
 	tree := New(0)
 	for _, changes := range ChangeSets {
-		_, _, err := tree.ApplyChangeSet(changes, true)
+		tree.ApplyChangeSet(changes)
+		_, _, err := tree.SaveVersion(true)
 		require.NoError(t, err)
 	}
 
@@ -146,7 +151,8 @@ func TestDBSnapshotRestore(t *testing.T) {
 				Changeset: changes,
 			},
 		}
-		_, _, err := db.Commit(cs)
+		require.NoError(t, db.ApplyChangeSets(cs))
+		_, _, err := db.Commit()
 		require.NoError(t, err)
 
 		testSnapshotRoundTrip(t, db)
@@ -175,7 +181,7 @@ func testSnapshotRoundTrip(t *testing.T, db *DB) {
 	require.Equal(t, db.Hash(), db2.Hash())
 
 	// the imported db function normally
-	_, _, err = db2.Commit(nil)
+	_, _, err = db2.Commit()
 	require.NoError(t, err)
 }
 
