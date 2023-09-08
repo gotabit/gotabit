@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -877,6 +878,16 @@ func NewGotabitApp(
 	}
 
 	return app
+}
+
+func (app *App) Close() error {
+	err := app.BaseApp.Close()
+
+	if cms, ok := app.CommitMultiStore().(io.Closer); ok {
+		return errors.Join(err, cms.Close())
+	}
+
+	return err
 }
 
 func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.WasmConfig, txCounterStoreKey storetypes.StoreKey) {
