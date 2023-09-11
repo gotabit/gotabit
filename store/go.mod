@@ -7,7 +7,7 @@ require (
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/confio/ics23/go v0.9.0
-	github.com/cosmos/cosmos-sdk v0.47.4
+	github.com/cosmos/cosmos-sdk v0.47.5
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/iavl v0.21.0-alpha.1.0.20230810150328-b35e4ff2218e
 	github.com/crypto-org-chain/cronos/memiavl v0.0.3
@@ -127,13 +127,11 @@ require (
 )
 
 replace (
-	github.com/crypto-org-chain/cronos/memiavl => ../memiavl
-
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
+	github.com/crypto-org-chain/cronos/memiavl => ../memiavl
 
 	github.com/gogo/protobuf => github.com/cosmos/gogoproto v1.3.3-alpha.regen.1
 	// use cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.37.2
-	// https://github.com/crypto-org-chain/tm-db/tree/release/v0.6.x
-	github.com/tendermint/tm-db => github.com/cometbft/cometbft-db v0.8.0
+// https://github.com/crypto-org-chain/tm-db/tree/release/v0.6.x
 )

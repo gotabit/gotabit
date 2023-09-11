@@ -10,7 +10,7 @@ require (
 	github.com/CosmWasm/wasmd v0.41.0
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cometbft/cometbft-db v0.8.0
-	github.com/cosmos/cosmos-sdk v0.47.4
+	github.com/cosmos/cosmos-sdk v0.47.5
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/ibc-go/v7 v7.2.0
 	github.com/crypto-org-chain/cronos/store v0.0.0-00010101000000-000000000000
@@ -182,8 +182,7 @@ require (
 )
 
 replace (
-
-	cosmossdk.io/simapp => github.com/cosmos/cosmos-sdk/simapp v0.47.2
+	cosmossdk.io/simapp => github.com/cosmos/cosmos-sdk/simapp v0.47.5
 
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	// Modified according to cronos repo. github.com/crypto-org-chain/cronos
