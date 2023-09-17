@@ -3,11 +3,11 @@ module github.com/crypto-org-chain/cronos/memiavl
 go 1.20
 
 require (
+	github.com/alitto/pond v1.8.3
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/confio/ics23/go v0.9.0
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/iavl v0.21.0-alpha.1.0.20230810150328-b35e4ff2218e
-	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d
 	github.com/ledgerwatch/erigon-lib v0.0.0-20230210071639-db0e7ed11263
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/btree v1.6.0
@@ -15,7 +15,6 @@ require (
 	github.com/tidwall/wal v1.1.7
 	github.com/zbiljic/go-filelock v0.0.0-20170914061330-1dbf7103ab7d
 	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc
-	golang.org/x/sync v0.1.0
 )
 
 require (
