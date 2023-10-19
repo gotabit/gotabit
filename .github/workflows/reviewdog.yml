@@ -1,4 +1,4 @@
-name: reviewdog
+name: Review
 on: [pull_request]
 jobs:
   # NOTE: golangci-lint doesn't report multiple errors on the same line from
@@ -158,9 +158,4 @@ jobs:
           tool_name: misspell
           level: info
 
-  actionlint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: reviewdog/action-actionlint@v1
 
