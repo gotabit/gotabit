@@ -63,8 +63,8 @@ Go v1.18+ or higher is required for The GotaBit Node.
    For Linux:
 
    ```sh
-   wget <https://golang.org/dl/go1.18.2.linux-amd64.tar.gz>
-   sudo tar -C /usr/local -xzf go1.18.2.linux-amd64.tar.gz
+   wget <https://golang.org/dl/go1.19.13.linux-amd64.tar.gz>
+   sudo tar -C /usr/local -xzf go1.19.13.linux-amd64.tar.gz
    export PATH=$PATH:/usr/local/go/bin
    export PATH=$PATH:$(go env GOPATH)/bin
    ```
@@ -116,7 +116,7 @@ server_name: gotabitd
 version: <x.x.x>
 commit: <Commit hash>
 build_tags: netgo,ledger
-go: go version go1.18.2 linux/amd64
+go: go version go1.19.13 linux/amd64
 build_deps:
 ...
 ```
