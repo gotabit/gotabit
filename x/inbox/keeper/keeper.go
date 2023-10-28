@@ -4,8 +4,8 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/gotabit/gotabit/x/inbox/types"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

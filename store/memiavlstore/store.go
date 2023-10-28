@@ -5,26 +5,23 @@ import (
 	"io"
 
 	"cosmossdk.io/errors"
-	abci "github.com/cometbft/cometbft/abci/types"
+	"cosmossdk.io/store/tracekv"
 	"github.com/cometbft/cometbft/libs/log"
 	tmcrypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
-	ics23 "github.com/confio/ics23/go"
-	"github.com/cosmos/cosmos-sdk/store/tracekv"
+	ics23 "github.com/cosmos/ics23/go"
 	"github.com/crypto-org-chain/cronos/memiavl"
+	"github.com/crypto-org-chain/cronos/store/kv"
 
-	"github.com/cosmos/cosmos-sdk/store/cachekv"
-	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
-	"github.com/cosmos/cosmos-sdk/store/types"
+	"cosmossdk.io/store/cachekv"
+	pruningtypes "cosmossdk.io/store/pruning/types"
+	"cosmossdk.io/store/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/types/kv"
-	"github.com/cosmos/iavl"
 )
 
 var (
 	_ types.KVStore       = (*Store)(nil)
 	_ types.CommitStore   = (*Store)(nil)
 	_ types.CommitKVStore = (*Store)(nil)
-	_ types.Queryable     = (*Store)(nil)
 )
 
 // Store Implements types.KVStore and CommitKVStore.
@@ -32,7 +29,7 @@ type Store struct {
 	tree   *memiavl.Tree
 	logger log.Logger
 
-	changeSet iavl.ChangeSet
+	changeSet memiavl.ChangeSet
 }
 
 func New(tree *memiavl.Tree, logger log.Logger) *Store {
@@ -41,6 +38,10 @@ func New(tree *memiavl.Tree, logger log.Logger) *Store {
 
 func (st *Store) Commit() types.CommitID {
 	panic("memiavl store is not supposed to be committed alone")
+}
+
+func (it *Store) WorkingHash() []byte {
+	panic("cannot call 'WorkingHash' on an immutable IAVL tree")
 }
 
 func (st *Store) LastCommitID() types.CommitID {
@@ -81,7 +82,7 @@ func (st *Store) CacheWrapWithTrace(w io.Writer, tc types.TraceContext) types.Ca
 //
 // we assume Set is only called in `Commit`, so the written state is only visible after commit.
 func (st *Store) Set(key, value []byte) {
-	st.changeSet.Pairs = append(st.changeSet.Pairs, &iavl.KVPair{
+	st.changeSet.Pairs = append(st.changeSet.Pairs, &memiavl.KVPair{
 		Key: key, Value: value,
 	})
 }
@@ -100,7 +101,7 @@ func (st *Store) Has(key []byte) bool {
 //
 // we assume Delete is only called in `Commit`, so the written state is only visible after commit.
 func (st *Store) Delete(key []byte) {
-	st.changeSet.Pairs = append(st.changeSet.Pairs, &iavl.KVPair{
+	st.changeSet.Pairs = append(st.changeSet.Pairs, &memiavl.KVPair{
 		Key: key, Delete: true,
 	})
 }
@@ -121,15 +122,15 @@ func (st *Store) SetInitialVersion(version int64) {
 }
 
 // PopChangeSet returns the change set and clear it
-func (st *Store) PopChangeSet() iavl.ChangeSet {
+func (st *Store) PopChangeSet() memiavl.ChangeSet {
 	cs := st.changeSet
-	st.changeSet = iavl.ChangeSet{}
+	st.changeSet = memiavl.ChangeSet{}
 	return cs
 }
 
-func (st *Store) Query(req abci.RequestQuery) (res abci.ResponseQuery) {
+func (st *Store) Query(req *types.RequestQuery) (res *types.ResponseQuery, err error) {
 	if req.Height > 0 && req.Height != st.tree.Version() {
-		return sdkerrors.QueryResult(errors.Wrap(sdkerrors.ErrInvalidHeight, "invalid height"), false)
+		return nil, errors.Wrap(sdkerrors.ErrInvalidHeight, "invalid height")
 	}
 
 	res.Height = st.tree.Version()
@@ -166,10 +167,10 @@ func (st *Store) Query(req abci.RequestQuery) (res abci.ResponseQuery) {
 
 		res.Value = bz
 	default:
-		return sdkerrors.QueryResult(errors.Wrapf(sdkerrors.ErrUnknownRequest, "unexpected query path: %v", req.Path), false)
+		return nil, errors.Wrapf(sdkerrors.ErrUnknownRequest, "unexpected query path: %v", req.Path)
 	}
 
-	return res
+	return res, nil
 }
 
 // Takes a MutableTree, a key, and a flag for creating existence or absence proof and returns the

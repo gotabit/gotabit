@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/iavl"
 	"github.com/stretchr/testify/require"
 )
 
@@ -167,7 +166,7 @@ func mockNameChangeSet(name, key, value string) []*NamedChangeSet {
 	return []*NamedChangeSet{
 		{
 			Name: name,
-			Changeset: iavl.ChangeSet{
+			Changeset: ChangeSet{
 				Pairs: mockKVPairs(key, value),
 			},
 		},
@@ -365,8 +364,8 @@ func TestEmptyValue(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, db.ApplyChangeSets([]*NamedChangeSet{
-		{Name: "test", Changeset: iavl.ChangeSet{
-			Pairs: []*iavl.KVPair{
+		{Name: "test", Changeset: ChangeSet{
+			Pairs: []*KVPair{
 				{Key: []byte("hello1"), Value: []byte("")},
 				{Key: []byte("hello2"), Value: []byte("")},
 				{Key: []byte("hello3"), Value: []byte("")},
@@ -377,8 +376,8 @@ func TestEmptyValue(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, db.ApplyChangeSets([]*NamedChangeSet{
-		{Name: "test", Changeset: iavl.ChangeSet{
-			Pairs: []*iavl.KVPair{{Key: []byte("hello1"), Delete: true}},
+		{Name: "test", Changeset: ChangeSet{
+			Pairs: []*KVPair{{Key: []byte("hello1"), Delete: true}},
 		}},
 	}))
 	version, err := db.Commit()
@@ -435,8 +434,8 @@ func TestFastCommit(t *testing.T) {
 	db, err := Load(dir, Options{CreateIfMissing: true, InitialStores: []string{"test"}, SnapshotInterval: 3, AsyncCommitBuffer: 10, SnapshotWriterLimit: DefaultSnapshotWriterLimit})
 	require.NoError(t, err)
 
-	cs := iavl.ChangeSet{
-		Pairs: []*iavl.KVPair{
+	cs := ChangeSet{
+		Pairs: []*KVPair{
 			{Key: []byte("hello1"), Value: make([]byte, 1024*1024)},
 		},
 	}
@@ -458,13 +457,13 @@ func TestRepeatedApplyChangeSet(t *testing.T) {
 	require.NoError(t, err)
 
 	err = db.ApplyChangeSets([]*NamedChangeSet{
-		{Name: "test1", Changeset: iavl.ChangeSet{
-			Pairs: []*iavl.KVPair{
+		{Name: "test1", Changeset: ChangeSet{
+			Pairs: []*KVPair{
 				{Key: []byte("hello1"), Value: []byte("world1")},
 			},
 		}},
-		{Name: "test2", Changeset: iavl.ChangeSet{
-			Pairs: []*iavl.KVPair{
+		{Name: "test2", Changeset: ChangeSet{
+			Pairs: []*KVPair{
 				{Key: []byte("hello2"), Value: []byte("world2")},
 			},
 		}},
@@ -473,8 +472,8 @@ func TestRepeatedApplyChangeSet(t *testing.T) {
 
 	err = db.ApplyChangeSets([]*NamedChangeSet{{Name: "test1"}})
 	require.Error(t, err)
-	err = db.ApplyChangeSet("test1", iavl.ChangeSet{
-		Pairs: []*iavl.KVPair{
+	err = db.ApplyChangeSet("test1", ChangeSet{
+		Pairs: []*KVPair{
 			{Key: []byte("hello2"), Value: []byte("world2")},
 		},
 	})
@@ -483,27 +482,27 @@ func TestRepeatedApplyChangeSet(t *testing.T) {
 	_, err = db.Commit()
 	require.NoError(t, err)
 
-	err = db.ApplyChangeSet("test1", iavl.ChangeSet{
-		Pairs: []*iavl.KVPair{
+	err = db.ApplyChangeSet("test1", ChangeSet{
+		Pairs: []*KVPair{
 			{Key: []byte("hello2"), Value: []byte("world2")},
 		},
 	})
 	require.NoError(t, err)
-	err = db.ApplyChangeSet("test2", iavl.ChangeSet{
-		Pairs: []*iavl.KVPair{
+	err = db.ApplyChangeSet("test2", ChangeSet{
+		Pairs: []*KVPair{
 			{Key: []byte("hello2"), Value: []byte("world2")},
 		},
 	})
 	require.NoError(t, err)
 
-	err = db.ApplyChangeSet("test1", iavl.ChangeSet{
-		Pairs: []*iavl.KVPair{
+	err = db.ApplyChangeSet("test1", ChangeSet{
+		Pairs: []*KVPair{
 			{Key: []byte("hello2"), Value: []byte("world2")},
 		},
 	})
 	require.Error(t, err)
-	err = db.ApplyChangeSet("test2", iavl.ChangeSet{
-		Pairs: []*iavl.KVPair{
+	err = db.ApplyChangeSet("test2", ChangeSet{
+		Pairs: []*KVPair{
 			{Key: []byte("hello2"), Value: []byte("world2")},
 		},
 	})

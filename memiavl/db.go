@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/alitto/pond"
-	"github.com/cosmos/iavl"
 	"github.com/tidwall/wal"
 )
 
@@ -346,7 +345,7 @@ func (db *DB) ApplyChangeSets(changeSets []*NamedChangeSet) error {
 
 // ApplyChangeSet wraps MultiTree.ApplyChangeSet, it also append the changesets in the pending log,
 // which will be persisted to the WAL in next Commit call.
-func (db *DB) ApplyChangeSet(name string, changeSet iavl.ChangeSet) error {
+func (db *DB) ApplyChangeSet(name string, changeSet ChangeSet) error {
 	if len(changeSet.Pairs) == 0 {
 		return nil
 	}
