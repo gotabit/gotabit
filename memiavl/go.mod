@@ -71,5 +71,7 @@ replace (
 	github.com/gogo/protobuf => github.com/cosmos/gogoproto v1.3.3-alpha.regen.1
 	// use cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.37.2
-// https://github.com/crypto-org-chain/tm-db/tree/release/v0.6.x
+	// https://github.com/crypto-org-chain/tm-db/tree/release/v0.6.x
+
+	cosmossdk.io/store => github.com/cosmos/cosmos-sdk/store v1.0.0-rc.0
 )
