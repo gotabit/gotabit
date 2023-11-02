@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	"github.com/gotabit/gotabit/x/inbox/types"
 
 	storetypes "cosmossdk.io/store/types"

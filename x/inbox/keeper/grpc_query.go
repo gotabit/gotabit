@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/pkg/errors"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,7 +25,7 @@ func (k Keeper) SentMessages(c context.Context, req *types.SentMessagesRequest) 
 	}
 
 	if len(req.Address) == 0 {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty address")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "empty address")
 	}
 
 	msgs := k.GetMsgsBySender(ctx, req.Address)
@@ -41,7 +42,7 @@ func (k Keeper) ReceivedMessages(c context.Context, req *types.ReceivedMessagesR
 	}
 
 	if len(req.Address) == 0 {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty address")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "empty address")
 	}
 
 	msgs := k.GetMsgsByReceiver(ctx, req.Address, req.Topics)

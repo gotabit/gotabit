@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/math"
 	"github.com/gotabit/gotabit/x/mint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -29,35 +30,35 @@ const (
 )
 
 var distributionProportions = types.DistributionProportions{
-	Staking:           sdk.NewDecWithPrec(25, 2),
-	EcoFundPool:       sdk.NewDecWithPrec(45, 2),
-	DeveloperFundPool: sdk.NewDecWithPrec(25, 2),
-	CommunityPool:     sdk.NewDecWithPrec(0o5, 2),
+	Staking:           math.LegacyNewDecWithPrec(25, 2),
+	EcoFundPool:       math.LegacyNewDecWithPrec(45, 2),
+	DeveloperFundPool: math.LegacyNewDecWithPrec(25, 2),
+	CommunityPool:     math.LegacyNewDecWithPrec(0o5, 2),
 }
 
 // RandomizedGenState generates a random GenesisState for mint.
 func RandomizedGenState(simState *module.SimulationState) {
-	var epochProvisions sdk.Dec
+	var epochProvisions math.LegacyDec
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, epochProvisionsKey, &epochProvisions, simState.Rand,
+		epochProvisionsKey, &epochProvisions, simState.Rand,
 		func(r *rand.Rand) { epochProvisions = genEpochProvisions(r) },
 	)
 
-	var reductionFactor sdk.Dec
+	var reductionFactor math.LegacyDec
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, reductionFactorKey, &reductionFactor, simState.Rand,
+		reductionFactorKey, &reductionFactor, simState.Rand,
 		func(r *rand.Rand) { reductionFactor = genReductionFactor(r) },
 	)
 
 	var reductionPeriodInEpochs int64
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, reductionPeriodInEpochsKey, &reductionPeriodInEpochs, simState.Rand,
+		reductionPeriodInEpochsKey, &reductionPeriodInEpochs, simState.Rand,
 		func(r *rand.Rand) { reductionPeriodInEpochs = genReductionPeriodInEpochs(r) },
 	)
 
 	var mintintRewardsDistributionStartEpoch int64
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, mintingRewardsDistributionStartEpochKey, &mintintRewardsDistributionStartEpoch, simState.Rand,
+		mintingRewardsDistributionStartEpochKey, &mintintRewardsDistributionStartEpoch, simState.Rand,
 		func(r *rand.Rand) { mintintRewardsDistributionStartEpoch = genMintintRewardsDistributionStartEpoch(r) },
 	)
 
@@ -86,12 +87,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(mintGenesis)
 }
 
-func genEpochProvisions(r *rand.Rand) sdk.Dec {
-	return sdk.NewDec(int64(r.Intn(maxInt64)))
+func genEpochProvisions(r *rand.Rand) math.LegacyDec {
+	return math.LegacyNewDec(int64(r.Intn(maxInt64)))
 }
 
-func genReductionFactor(r *rand.Rand) sdk.Dec {
-	return sdk.NewDecWithPrec(int64(r.Intn(10)), 1)
+func genReductionFactor(r *rand.Rand) math.LegacyDec {
+	return math.LegacyNewDecWithPrec(int64(r.Intn(10)), 1)
 }
 
 func genReductionPeriodInEpochs(r *rand.Rand) int64 {
