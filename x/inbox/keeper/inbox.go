@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/gotabit/gotabit/x/inbox/types"
 )
 
@@ -30,7 +31,7 @@ func (k Keeper) GetMsgById(ctx sdk.Context, id uint64) (*types.Msg, error) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(append(types.PrefixMsg, sdk.Uint64ToBigEndian(id)...))
 	if bz == nil {
-		return &types.Msg{}, fmt.Errorf("Inbox module error. Msg: %d does not exist", id)
+		return nil, fmt.Errorf("inbox module error. Msg: %d does not exist", id)
 	}
 	msg := types.Msg{}
 	k.cdc.MustUnmarshal(bz, &msg)
@@ -42,7 +43,7 @@ func (k Keeper) GetAllMsgs(ctx sdk.Context) []types.Msg {
 	store := ctx.KVStore(k.storeKey)
 
 	msgs := []types.Msg{}
-	it := store.Iterator(types.PrefixMsg, types.PrefixMsg)
+	it := storetypes.KVStorePrefixIterator(store, types.PrefixMsg)
 	defer it.Close()
 
 	for ; it.Valid(); it.Next() {
@@ -58,8 +59,7 @@ func (k Keeper) GetMsgsBySender(ctx sdk.Context, sender string) []*types.Msg {
 	store := ctx.KVStore(k.storeKey)
 
 	msgs := []*types.Msg{}
-	key := append(types.PrefixMsgBySender, sender...)
-	it := store.Iterator(key, key)
+	it := storetypes.KVStorePrefixIterator(store, append(types.PrefixMsgBySender, sender...))
 	defer it.Close()
 
 	for ; it.Valid(); it.Next() {
@@ -90,7 +90,8 @@ func (k Keeper) GetMsgsByReceiver(ctx sdk.Context, receiver, topics string) []*t
 		// Filter by receiver and topics
 		prefix = append(append(types.PrefixMsgByReceiverAndTopics, receiver...), topics...)
 	}
-	it := store.Iterator(prefix, prefix)
+	it := storetypes.KVStorePrefixIterator(store, prefix)
+
 	defer it.Close()
 
 	for ; it.Valid(); it.Next() {

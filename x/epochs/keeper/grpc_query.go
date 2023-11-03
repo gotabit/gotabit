@@ -42,7 +42,11 @@ func (q Querier) CurrentEpoch(c context.Context, req *types.QueryCurrentEpochReq
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	info := q.Keeper.GetEpochInfo(ctx, req.Identifier)
+	info, err := q.Keeper.GetEpochInfo(ctx, req.Identifier)
+	if err != nil {
+		return nil, err
+	}
+
 	if info.Identifier != req.Identifier {
 		return nil, errors.New("not available identifier")
 	}
