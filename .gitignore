@@ -9,3 +9,5 @@ go.sum
 yarn.lock
 
 cmd/gotabitd/gotabitd
+*.sum
+go.work.sum
