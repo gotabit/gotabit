@@ -55,7 +55,7 @@ func (k Keeper) GetAllMsgs(ctx sdk.Context) []types.Msg {
 }
 
 // GetMsgsBySender returns all msgs by sender
-func (k Keeper) GetMsgsBySender(ctx sdk.Context, sender string) []*types.Msg {
+func (k Keeper) GetMsgsBySender(ctx sdk.Context, sender string) ([]*types.Msg, error) {
 	store := ctx.KVStore(k.storeKey)
 
 	msgs := []*types.Msg{}
@@ -69,16 +69,16 @@ func (k Keeper) GetMsgsBySender(ctx sdk.Context, sender string) []*types.Msg {
 		}
 		msg, err := k.GetMsgById(ctx, msgId)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		msgs = append(msgs, msg)
 	}
-	return msgs
+	return msgs, nil
 }
 
 // GetMsgsByReceiver returns all msgs by receiver
-func (k Keeper) GetMsgsByReceiver(ctx sdk.Context, receiver, topics string) []*types.Msg {
+func (k Keeper) GetMsgsByReceiver(ctx sdk.Context, receiver, topics string) ([]*types.Msg, error) {
 	store := ctx.KVStore(k.storeKey)
 
 	msgs := []*types.Msg{}
@@ -101,12 +101,12 @@ func (k Keeper) GetMsgsByReceiver(ctx sdk.Context, receiver, topics string) []*t
 		}
 		msg, err := k.GetMsgById(ctx, msgId)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		msgs = append(msgs, msg)
 	}
-	return msgs
+	return msgs, nil
 }
 
 // SetMsg stores Msg to store
