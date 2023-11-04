@@ -28,45 +28,38 @@ export GO111MODULE = on
 
 build_tags = netgo
 ifeq ($(LEDGER_ENABLED),true)
-	ifeq ($(OS),Windows_NT)
-		GCCEXE = $(shell where gcc.exe 2> NUL)
-		ifeq ($(GCCEXE),)
-			$(error gcc.exe not installed for ledger support, please install or set LEDGER_ENABLED=false)
-		else
-			build_tags += ledger
-		endif
-	else
-		UNAME_S = $(shell uname -s)
-		ifeq ($(UNAME_S),OpenBSD)
-			$(warning OpenBSD detected, disabling ledger support (https://github.com/cosmos/cosmos-sdk/issues/1988))
-		else
-			GCC = $(shell command -v gcc 2> /dev/null)
-			ifeq ($(GCC),)
-				$(error gcc not installed for ledger support, please install or set LEDGER_ENABLED=false)
-			else
-				build_tags += ledger
-			endif
-		endif
-	endif
+  ifeq ($(OS),Windows_NT)
+    GCCEXE = $(shell where gcc.exe 2> NUL)
+    ifeq ($(GCCEXE),)
+      $(error gcc.exe not installed for ledger support, please install or set LEDGER_ENABLED=false)
+    else
+      build_tags += ledger
+    endif
+  else
+    UNAME_S = $(shell uname -s)
+    ifeq ($(UNAME_S),OpenBSD)
+      $(warning OpenBSD detected, disabling ledger support (https://github.com/cosmos/cosmos-sdk/issues/1988))
+    else
+      GCC = $(shell command -v gcc 2> /dev/null)
+      ifeq ($(GCC),)
+        $(error gcc not installed for ledger support, please install or set LEDGER_ENABLED=false)
+      else
+        build_tags += ledger
+      endif
+    endif
+  endif
 endif
 
-ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
-	build_tags += gcc
+ifeq ($(WITH_CLEVELDB),yes)
+  build_tags += gcc
 endif
-ifeq (rocksdb,$(findstring rocksdb,$(COSMOS_BUILD_OPTIONS)))
-	build_tags += rocksdb
-endif
-ifeq (boltdb,$(findstring boltdb,$(COSMOS_BUILD_OPTIONS)))
-	build_tags += boltdb
-endif
-
 build_tags += $(BUILD_TAGS)
 build_tags := $(strip $(build_tags))
 
 whitespace :=
-whitespace += $(whitespace)
+empty = $(whitespace) $(whitespace)
 comma := ,
-build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+build_tags_comma_sep := $(subst $(empty),$(comma),$(build_tags))
 
 # process linker flags
 
@@ -77,42 +70,17 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=$(NAME) \
 	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
 	-X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_VERSION)
 
-# DB backend selection
-ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
-	ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
+ifeq ($(WITH_CLEVELDB),yes)
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
 endif
-ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
-	ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
-endif
-# handle rocksdb
-ifeq (rocksdb,$(findstring rocksdb,$(COSMOS_BUILD_OPTIONS)))
-	$(info ################################################################)
-	$(info To use rocksdb, you need to install rocksdb first)
-	$(info Please follow this guide https://github.com/rockset/rocksdb-cloud/blob/master/INSTALL.md)
-	$(info ################################################################)
-	CGO_ENABLED=1
-	ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb
-endif
-# handle boltdb
-ifeq (boltdb,$(findstring boltdb,$(COSMOS_BUILD_OPTIONS)))
-	ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb
-endif
-
 ifeq ($(LINK_STATICALLY),true)
 	ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
-endif
-
-ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
-	ldflags += -w -s
 endif
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
-# check for nostrip option
-ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
-	BUILD_FLAGS += -trimpath
-endif
+BUILD_FLAGS := -tags "$(build_tags_comma_sep)" -ldflags '$(ldflags)' -trimpath
+
 
 ###############################################################################
 ###                                Building                                 ###

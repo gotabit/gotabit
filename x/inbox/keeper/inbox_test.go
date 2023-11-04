@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"github.com/gotabit/gotabit/x/inbox/types"
+	"gotest.tools/v3/assert"
 )
 
 func (suite *KeeperTestSuite) TestLastMsgIdGetSet() {
@@ -24,11 +25,14 @@ func (suite *KeeperTestSuite) TestMsgGetSet() {
 	suite.Require().Error(err)
 
 	// get sent msgs when not available
-	sentMsgs := suite.app.InboxKeeper.GetMsgsBySender(suite.ctx, "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47")
+	sentMsgs, err := suite.app.InboxKeeper.GetMsgsBySender(suite.ctx, "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47")
+	assert.NilError(suite.T(), err, "app.InboxKeeper.GetMsgsBySender")
 	suite.Require().Len(sentMsgs, 0)
 
 	// get received msgs when not available
-	receivedMsgs := suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47", "")
+	receivedMsgs, err := suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47", "")
+	assert.NilError(suite.T(), err, "app.InboxKeeper.GetMsgsByReceiver")
+
 	suite.Require().Len(receivedMsgs, 0)
 
 	// create a new msg
@@ -66,16 +70,19 @@ func (suite *KeeperTestSuite) TestMsgGetSet() {
 		suite.Require().Equal(*msg, *c)
 	}
 
-	sentMsgs = suite.app.InboxKeeper.GetMsgsBySender(suite.ctx, "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47")
+	sentMsgs, err = suite.app.InboxKeeper.GetMsgsBySender(suite.ctx, "gio13m350fvnk3s6y5n8ugxhmka277r0t7cw48ru47")
+	assert.NilError(suite.T(), err, "app.InboxKeeper.GetMsgsBySender")
 	suite.Require().Len(sentMsgs, 3)
 	for i, msg := range msgs {
 		suite.Require().Equal(*msg, *sentMsgs[i])
 	}
 
-	receivedMsgs = suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, "gio1daxjpnra6jpahzjg8e6c865hmtt7469n249ln2", "")
+	receivedMsgs, err = suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, "gio1daxjpnra6jpahzjg8e6c865hmtt7469n249ln2", "")
+	assert.NilError(suite.T(), err, "app.InboxKeeper.GetMsgsByReceiver")
 	suite.Require().Len(receivedMsgs, 2)
 
-	receivedMsgs = suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, "gio1daxjpnra6jpahzjg8e6c865hmtt7469n249ln2", "topic2")
+	receivedMsgs, err = suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, "gio1daxjpnra6jpahzjg8e6c865hmtt7469n249ln2", "topic2")
+	assert.NilError(suite.T(), err, "app.InboxKeeper.GetMsgsByReceiver")
 	suite.Require().Len(receivedMsgs, 1)
 }
 
