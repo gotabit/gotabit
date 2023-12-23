@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
+	snapshottypes "cosmossdk.io/store/snapshots/types"
 	protoio "github.com/cosmos/gogoproto/io"
 
 	"github.com/crypto-org-chain/cronos/memiavl"

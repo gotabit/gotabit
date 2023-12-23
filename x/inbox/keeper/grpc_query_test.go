@@ -54,7 +54,11 @@ func (suite *KeeperTestSuite) TestGRPCSentMsgs() {
 	}
 
 	for _, tc := range tests {
-		resp := suite.app.InboxKeeper.GetMsgsBySender(suite.ctx, tc.sender)
+		resp, err := suite.app.InboxKeeper.GetMsgsBySender(suite.ctx, tc.sender)
+		if err != nil {
+			panic(err)
+		}
+
 		suite.Require().Equal(len(resp), len(tc.expectedMsgs))
 		for i, msg := range resp {
 			suite.Require().Equal(msg.Id, tc.expectedMsgs[i].Id)
@@ -131,7 +135,11 @@ func (suite *KeeperTestSuite) TestGRPCReceivedMsgs() {
 	}
 
 	for _, tc := range tests {
-		resp := suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, tc.receiver, tc.topics)
+		resp, err := suite.app.InboxKeeper.GetMsgsByReceiver(suite.ctx, tc.receiver, tc.topics)
+		if err != nil {
+			panic(err)
+		}
+
 		suite.Require().Equal(len(resp), len(tc.expectedMsgs))
 		for i, msg := range resp {
 			suite.Require().Equal(msg.Id, tc.expectedMsgs[i].Id)

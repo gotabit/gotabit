@@ -3,8 +3,8 @@ package rootmulti
 import (
 	"testing"
 
+	"cosmossdk.io/store/types"
 	"github.com/cometbft/cometbft/libs/log"
-	"github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"
 )
 

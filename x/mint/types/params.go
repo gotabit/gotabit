@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"cosmossdk.io/math"
 	yaml "gopkg.in/yaml.v2"
 
 	epochtypes "github.com/gotabit/gotabit/x/epochs/types"
@@ -33,8 +34,8 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // NewParams returns new mint module parameters initialized to the given values.
 func NewParams(
-	mintDenom string, genesisEpochProvisions sdk.Dec, epochIdentifier string,
-	ReductionFactor sdk.Dec, reductionPeriodInEpochs int64, distrProportions DistributionProportions,
+	mintDenom string, genesisEpochProvisions math.LegacyDec, epochIdentifier string,
+	ReductionFactor math.LegacyDec, reductionPeriodInEpochs int64, distrProportions DistributionProportions,
 	mintingRewardsDistributionStartEpoch int64, ecoFundPoolAddress, developerFundPoolAddress string,
 ) Params {
 	return Params{
@@ -54,15 +55,15 @@ func NewParams(
 func DefaultParams() Params {
 	return Params{
 		MintDenom:               sdk.DefaultBondDenom,
-		GenesisEpochProvisions:  sdk.NewDec(1000000000),
-		EpochIdentifier:         "hour",                                     // 1 hour
-		ReductionPeriodInEpochs: 6,                                          // 6 hours
-		ReductionFactor:         sdk.NewDecWithPrec(666666666666666666, 18), // 2/3
+		GenesisEpochProvisions:  math.LegacyNewDec(1000000000),
+		EpochIdentifier:         "hour",                                            // 1 hour
+		ReductionPeriodInEpochs: 6,                                                 // 6 hours
+		ReductionFactor:         math.LegacyNewDecWithPrec(666666666666666666, 18), // 2/3
 		DistributionProportions: DistributionProportions{
-			Staking:           sdk.NewDecWithPrec(4, 1), // 0.4
-			EcoFundPool:       sdk.NewDecWithPrec(3, 1), // 0.3
-			DeveloperFundPool: sdk.NewDecWithPrec(2, 1), // 0.2
-			CommunityPool:     sdk.NewDecWithPrec(1, 1), // 0.1
+			Staking:           math.LegacyNewDecWithPrec(4, 1), // 0.4
+			EcoFundPool:       math.LegacyNewDecWithPrec(3, 1), // 0.3
+			DeveloperFundPool: math.LegacyNewDecWithPrec(2, 1), // 0.2
+			CommunityPool:     math.LegacyNewDecWithPrec(1, 1), // 0.1
 		},
 		MintingRewardsDistributionStartEpoch: 1,
 		EcoFundPoolAddress:                   "",
@@ -142,12 +143,12 @@ func validateMintDenom(i interface{}) error {
 }
 
 func validateGenesisEpochProvisions(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.LT(sdk.ZeroDec()) {
+	if v.LT(math.LegacyZeroDec()) {
 		return fmt.Errorf("genesis epoch provision must be non-negative")
 	}
 
@@ -168,12 +169,12 @@ func validateReductionPeriodInEpochs(i interface{}) error {
 }
 
 func validateReductionFactor(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.GT(sdk.NewDec(1)) {
+	if v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("reduction factor cannot be greater than 1")
 	}
 
@@ -208,7 +209,7 @@ func validateDistributionProportions(i interface{}) error {
 
 	totalProportions := v.Staking.Add(v.EcoFundPool).Add(v.DeveloperFundPool).Add(v.CommunityPool)
 
-	if !totalProportions.Equal(sdk.NewDec(1)) {
+	if !totalProportions.Equal(math.LegacyOneDec()) {
 		return errors.New("total distributions ratio should be 1")
 	}
 

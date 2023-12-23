@@ -6,7 +6,7 @@ import (
 	"math"
 
 	"cosmossdk.io/errors"
-	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
+	snapshottypes "cosmossdk.io/store/snapshots/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	protoio "github.com/cosmos/gogoproto/io"
 

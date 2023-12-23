@@ -4,9 +4,7 @@ import (
 	"context"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"github.com/pkg/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -17,34 +15,28 @@ var _ types.QueryServer = Keeper{}
 
 // SentMessages returns messages sent from user
 func (k Keeper) SentMessages(c context.Context, req *types.SentMessagesRequest) (*types.SentMessagesResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	if req == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	if req == nil || len(req.Address) == 0 {
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid request")
 	}
 
-	if len(req.Address) == 0 {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty address")
+	msgs, err := k.GetMsgsBySender(sdk.UnwrapSDKContext(c), req.Address)
+	if err != nil {
+		return nil, err
 	}
-
-	msgs := k.GetMsgsBySender(ctx, req.Address)
 
 	return &types.SentMessagesResponse{Messages: msgs}, nil
 }
 
 // ReceivedMessages returns messages received by user
 func (k Keeper) ReceivedMessages(c context.Context, req *types.ReceivedMessagesRequest) (*types.ReceivedMessagesResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	if req == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	if req == nil || len(req.Address) == 0 {
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid request")
 	}
 
-	if len(req.Address) == 0 {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty address")
+	msgs, err := k.GetMsgsByReceiver(sdk.UnwrapSDKContext(c), req.Address, req.Topics)
+	if err != nil {
+		return nil, err
 	}
-
-	msgs := k.GetMsgsByReceiver(ctx, req.Address, req.Topics)
 
 	return &types.ReceivedMessagesResponse{Messages: msgs}, nil
 }

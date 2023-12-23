@@ -4,6 +4,7 @@ package gotabit.mint.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "gotabit/mint/v1beta1/mint.proto";
+import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/gotabit/gotabit/x/mint/types";
 
@@ -39,7 +40,7 @@ message QueryEpochProvisionsRequest {}
 message QueryEpochProvisionsResponse {
   // epoch_provisions is the current minting per epoch provisions value.
   bytes epoch_provisions = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 }

@@ -8,34 +8,35 @@ import (
 
 	"github.com/gotabit/gotabit/x/epochs/types"
 
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetEpochInfo returns epoch info by identifier.
-func (k Keeper) GetEpochInfo(ctx sdk.Context, identifier string) types.EpochInfo {
-	epoch := types.EpochInfo{}
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(append(types.KeyPrefixEpoch, []byte(identifier)...))
-	if b == nil {
-		return epoch
+func (k Keeper) GetEpochInfo(ctx sdk.Context, identifier string) (*types.EpochInfo, error) {
+	epoch := new(types.EpochInfo)
+
+	value := ctx.KVStore(k.storeKey).Get(append(types.KeyPrefixEpoch, []byte(identifier)...))
+	if value == nil {
+		return nil, fmt.Errorf("epoch info not exist . identifier: %s", identifier)
 	}
-	err := proto.Unmarshal(b, &epoch)
-	if err != nil {
-		panic(err)
+
+	if err := proto.Unmarshal(value, epoch); err != nil {
+		return nil, err
 	}
-	return epoch
+
+	return epoch, nil
 }
 
 // AddEpochInfo adds a new epoch info. Will return an error if the epoch fails validation,
 // or re-uses an existing identifier.
 // This method also sets the start time if left unset, and sets the epoch start height.
 func (k Keeper) AddEpochInfo(ctx sdk.Context, epoch types.EpochInfo) error {
-	err := epoch.Validate()
-	if err != nil {
+	if err := epoch.Validate(); err != nil {
 		return err
 	}
 	// Check if identifier already exists
-	if (k.GetEpochInfo(ctx, epoch.Identifier) != types.EpochInfo{}) {
+	if v, _ := k.GetEpochInfo(ctx, epoch.Identifier); v != nil {
 		return fmt.Errorf("epoch with identifier %s already exists", epoch.Identifier)
 	}
 
@@ -55,6 +56,7 @@ func (k Keeper) setEpochInfo(ctx sdk.Context, epoch types.EpochInfo) {
 	if err != nil {
 		panic(err)
 	}
+
 	store.Set(append(types.KeyPrefixEpoch, []byte(epoch.Identifier)...), value)
 }
 
@@ -68,7 +70,7 @@ func (k Keeper) DeleteEpochInfo(ctx sdk.Context, identifier string) {
 func (k Keeper) IterateEpochInfo(ctx sdk.Context, fn func(index int64, epochInfo types.EpochInfo) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefixEpoch)
+	iterator := storetypes.KVStorePrefixIterator(store, types.KeyPrefixEpoch)
 	defer iterator.Close()
 
 	i := int64(0)
@@ -103,9 +105,14 @@ func (k Keeper) AllEpochInfos(ctx sdk.Context) []types.EpochInfo {
 // would return 0.
 // Calling it any point in block N+1 (assuming the epoch doesn't increment) would return 1.
 func (k Keeper) NumBlocksSinceEpochStart(ctx sdk.Context, identifier string) (int64, error) {
-	epoch := k.GetEpochInfo(ctx, identifier)
-	if (epoch == types.EpochInfo{}) {
+	epoch, err := k.GetEpochInfo(ctx, identifier)
+	if err != nil {
+		return 0, err
+	}
+
+	if epoch == nil {
 		return 0, fmt.Errorf("epoch with identifier %s not found", identifier)
 	}
+
 	return ctx.BlockHeight() - epoch.CurrentEpochStartHeight, nil
 }

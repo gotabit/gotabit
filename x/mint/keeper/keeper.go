@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/gotabit/gotabit/x/mint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -131,8 +132,8 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 }
 
 // GetProportions gets the balance of the `MintedDenom` from minted coins and returns coins according to the `AllocationRatio`.
-func (k Keeper) GetProportions(ctx sdk.Context, mintedCoin sdk.Coin, ratio sdk.Dec) sdk.Coin {
-	return sdk.NewCoin(mintedCoin.Denom, sdk.NewDec(mintedCoin.Amount.Int64()).Mul(ratio).TruncateInt())
+func (k Keeper) GetProportions(ctx sdk.Context, mintedCoin sdk.Coin, ratio math.LegacyDec) sdk.Coin {
+	return sdk.NewCoin(mintedCoin.Denom, math.NewIntFromBigInt(ratio.Mul(math.LegacyNewDecFromBigInt(mintedCoin.Amount.BigInt())).TruncateInt().BigInt()))
 }
 
 // DistributeMintedCoin implements distribution of minted coins from mint to external modules.
